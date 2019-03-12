@@ -257,11 +257,11 @@ class Polygon : public Drawable
         modelBuffer->clearScreen();
 
         this->drawLines(modelBuffer);
-        if (this->xfill == -1) {
-            modelBuffer->floodfill(this->c);
-        } else {
-            modelBuffer->floodfill(this->c, new Coordinate(this->xfill, this->yfill));
-        }
+        // if (this->xfill == -1) {
+        //     modelBuffer->floodfill(this->c);
+        // } else {
+        //     modelBuffer->floodfill(this->c, new Coordinate(this->xfill, this->yfill));
+        // }
         // Coordinate *current = new Coordinate(0, 0);
         // for (int y = 0; y < height; y++)
         /**
@@ -333,7 +333,7 @@ class Polygon : public Drawable
         {
             Coordinate *c1 = this->points->at(i)->transform(this->scaleFactor, this->rotation, this->anchor);
             Coordinate *c2 = this->points->at((i + 1) % nLines)->transform(this->scaleFactor, this->rotation, this->anchor);
-            Line *line = new Line(c1->getX(), c1->getY(), c2->getX(), c2->getY(), this->c, this->c);
+            Line *line = new Line(c1->getX(), c1->getY(), c2->getX(), c2->getY(), this->c);
             line->draw(modelBuffer);
             delete c1;
             delete c2;

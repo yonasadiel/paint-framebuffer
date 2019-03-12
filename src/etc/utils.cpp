@@ -5,9 +5,11 @@
 #include "color.hpp"
 #include "utils.hpp"
 
+#define log_filename "log/info.log"
+
 void flogclear()
 {
-    std::ofstream fout("out.log", std::ios::out);
+    std::ofstream fout(log_filename, std::ios::out);
     std::time_t t = std::time(0);
     struct tm *tmp = gmtime(&t);
 
@@ -26,28 +28,28 @@ void flogclear()
 
 void flog(std::string s)
 {
-    std::ofstream fout("out.log", std::ios::out | std::ios::app);
-    fout << s << std::endl;
+    std::ofstream fout(log_filename, std::ios::out | std::ios::app);
+    fout << s;
     fout.close();
 }
 
 void flog(double f)
 {
-    std::ofstream fout("out.log", std::ios::out | std::ios::app);
-    fout << f << std::endl;
+    std::ofstream fout(log_filename, std::ios::out | std::ios::app);
+    fout << f;
     fout.close();
 }
 
 void flog(int x)
 {
-    std::ofstream fout("out.log", std::ios::out | std::ios::app);
-    fout << x << std::endl;
+    std::ofstream fout(log_filename, std::ios::out | std::ios::app);
+    fout << x;
     fout.close();
 }
 
 void flogcolor(color c)
 {
-    std::ofstream fout("out.log", std::ios::out | std::ios::app);
+    std::ofstream fout(log_filename, std::ios::out | std::ios::app);
     char outc = ' ';
     if (c == CBLACK)
         outc = 'B';

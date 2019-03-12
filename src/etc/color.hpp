@@ -13,6 +13,4 @@ typedef unsigned int color;
 #define CCYAN 0x0000FFFF
 #define CMAGENTA 0x00FF00FF
 
-color colorMid(color a, color b, double p);
-
 #endif

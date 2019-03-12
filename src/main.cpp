@@ -62,7 +62,24 @@ int main(int argc, char **args)
     std::vector<Drawable *> *objects = new std::vector<Drawable *>;
 
     Polygon* pesawat = new Polygon("images/pesawat.point", CRED, 1);
-    objects->push_back(pesawat);
+    pesawat->move(400, 400);
+    pesawat->scale(5);
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 8 * framebuffer->getXRes() / 8, 0 * framebuffer->getYRes() / 8, 0x0000FF9F));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 5 * framebuffer->getXRes() / 8, 0 * framebuffer->getYRes() / 8, 0X001FDFBF));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 4 * framebuffer->getXRes() / 8, 0 * framebuffer->getYRes() / 8, 0X003FBFDF));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 3 * framebuffer->getXRes() / 8, 0 * framebuffer->getYRes() / 8, 0X005F9FFF));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 0 * framebuffer->getXRes() / 8, 0 * framebuffer->getYRes() / 8, 0X007F7FDF));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 0 * framebuffer->getXRes() / 8, 3 * framebuffer->getYRes() / 8, 0X009F5FBF));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 0 * framebuffer->getXRes() / 8, 4 * framebuffer->getYRes() / 8, 0X00BF3F9F));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 0 * framebuffer->getXRes() / 8, 5 * framebuffer->getYRes() / 8, 0X00DF1F7F));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 0 * framebuffer->getXRes() / 8, 8 * framebuffer->getYRes() / 8, 0X00FF005F));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 3 * framebuffer->getXRes() / 8, 8 * framebuffer->getYRes() / 8, 0X00DF1F3F));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 4 * framebuffer->getXRes() / 8, 8 * framebuffer->getYRes() / 8, 0X00BF3F1F));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 5 * framebuffer->getXRes() / 8, 8 * framebuffer->getYRes() / 8, 0X009F5F00));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 8 * framebuffer->getXRes() / 8, 8 * framebuffer->getYRes() / 8, 0X007F7F1F));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 8 * framebuffer->getXRes() / 8, 5 * framebuffer->getYRes() / 8, 0X005F9F3F));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 8 * framebuffer->getXRes() / 8, 4 * framebuffer->getYRes() / 8, 0X003FBF5F));
+    objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 8 * framebuffer->getXRes() / 8, 3 * framebuffer->getYRes() / 8, 0X001FDF7F));
 
     std::thread *t0 = new std::thread(readInput, framebuffer, objects, &run);
     std::thread *t1 = new std::thread(draw, framebuffer, objects, &run);
