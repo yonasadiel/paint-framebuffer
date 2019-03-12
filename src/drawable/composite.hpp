@@ -98,7 +98,6 @@ public:
 	void draw(IFrameBuffer* framebuffer) {
 		for (Polygon* polygon : *this->polygons)
 			polygon->draw((FrameBuffer*) framebuffer);
-		flog("oke");
 	}
 };
 

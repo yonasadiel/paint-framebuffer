@@ -8,7 +8,7 @@ void readInput(Paint* paint) {
     initscr();
     timeout(-1);
 
-    int cursorSpeed = 2;
+    int cursorSpeed = 5;
     unsigned char state = STATE_IDLE;
 
     while (paint->stillRunning()) {
@@ -22,6 +22,9 @@ void readInput(Paint* paint) {
             } else if (c == COMMAND_DRAW_RECTANGLE) {
                 paint->showCursor();
                 paint->startDrawRectangle();
+            } else if (c == COMMAND_DRAW_TRIANGLE) {
+                paint->showCursor();
+                paint->startDrawTriangle();
             }
         }
 
