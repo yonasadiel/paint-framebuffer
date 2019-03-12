@@ -1,18 +1,17 @@
 #include <curses.h>
 #include <vector>
 
-#include "../framebuffer/framebuffer.hpp"
-#include "../drawable/drawable.hpp"
+#include "paint.hpp"
 #include "control.hpp"
 
-void readInput(FrameBuffer *framebuffer, std::vector<Drawable *> *objects, bool *run) {
+void readInput(Paint* paint) {
     initscr();
     timeout(-1);
 
-    while (*run) {
+    while (paint->stillRunning()) {
         char c = getch();
         if (c == COMMAND_QUIT) {
-            *run = false;
+            paint->terminate();
         }
     }
     endwin();

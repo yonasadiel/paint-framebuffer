@@ -3,8 +3,7 @@
 
 #include "../framebuffer/framebuffer.hpp"
 
-class Drawable
-{
+class Drawable {
   public:
     virtual void draw(IFrameBuffer *framebuffer) = 0;
     virtual void animate() {}

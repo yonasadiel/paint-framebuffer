@@ -6,6 +6,7 @@
 #include <time.h>
 
 #include "controller/control.hpp"
+#include "controller/paint.hpp"
 #include "controller/renderer.hpp"
 #include "drawable/drawable.hpp"
 #include "drawable/polygon.hpp"
@@ -22,21 +23,14 @@ int main(int argc, char **args) {
     }
 
     bool run = true;
-    std::vector<Drawable *> *objects = new std::vector<Drawable *>;
+    Paint* paint = new Paint();
 
-    Polygon* pesawat = new Polygon("images/pesawat.point", CRED, 1);
-    pesawat->move(400, 400);
-    pesawat->scale(5);
-    objects->push_back(pesawat);
-
-    std::thread *t0 = new std::thread(readInput, framebuffer, objects, &run);
-    std::thread *t1 = new std::thread(draw, framebuffer, objects, &run);
+    std::thread *t0 = new std::thread(readInput, paint);
+    std::thread *t1 = new std::thread(draw, framebuffer, paint);
 
     t0->join();
     t1->join();
 
-    delete pesawat;
-    delete objects;
     delete framebuffer;
 
     return 0;

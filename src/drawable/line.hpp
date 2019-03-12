@@ -7,49 +7,41 @@
 #include "../etc/utils.hpp"
 #include "drawable.hpp"
 
-class Line : public Drawable
-{
+class Line : public Drawable {
   public:
 	Coordinate *from;
 	Coordinate *to;
 	color c;
 
-	Line()
-	{
+	Line() {
 		this->from = new Coordinate(0, 0);
 		this->to = new Coordinate(0, 0);
 		this->c = CWHITE;
 	}
 
-	Line(int from_x, int from_y, int to_x, int to_y) : Line()
-	{
+	Line(int from_x, int from_y, int to_x, int to_y) : Line() {
 		this->from = new Coordinate(from_x, from_y);
 		this->to = new Coordinate(to_x, to_y);
 	}
 
-	Line(int from_x, int from_y, int to_x, int to_y, color c) : Line(from_x, from_y, to_x, to_y)
-	{
+	Line(int from_x, int from_y, int to_x, int to_y, color c) : Line(from_x, from_y, to_x, to_y) {
 		this->c = c;
 	}
 
-	~Line()
-	{
+	~Line() {
 		delete this->from;
 		delete this->to;
 	}
 
-	void moveLine(int dx, int dy)
-	{
+	void moveLine(int dx, int dy) {
 		this->from->move(dx, dy);
 		this->to->move(dx, dy);
 	}
 
-	void draw(IFrameBuffer *framebuffer)
-	{
+	void draw(IFrameBuffer *framebuffer) {
 		int dx = this->to->getX() - this->from->getX();
 		int dy = this->to->getY() - this->from->getY();
-		if (abs(dx) <= 0 && abs(dy) <= 0)
-		{
+		if (abs(dx) <= 0 && abs(dy) <= 0) {
 			return;
 		}
 
@@ -73,8 +65,7 @@ class Line : public Drawable
 		int xIt = xStart;
 
 		for (int yIt = yStart; ; yIt++) {
-			do
-			{
+			do {
 				Coordinate *coordinate;
 				coordinate = new Coordinate(xIt, yIt);
 				framebuffer->lazyDraw(coordinate, this->c);
