@@ -105,6 +105,7 @@ class Polygon : public Drawable {
         this->points->push_back(coordinate);
     }
 
+    Coordinate* pointAt(int i) { return this->points->at(i); }
     Coordinate* getAnchor() const { return this->anchor; }
 
     void setAnchor(int x, int y) {

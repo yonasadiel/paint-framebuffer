@@ -14,9 +14,9 @@ public:
         this->x = x;
         this->y = y;
     }
-    Coordinate(const Coordinate& others) {
-        this->x = others.getX();
-        this->y = others.getY();
+    Coordinate(Coordinate* others) {
+        this->x = others->getX();
+        this->y = others->getY();
     }
 
     int getX() const { return x; }

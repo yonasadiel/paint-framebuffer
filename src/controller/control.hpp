@@ -12,6 +12,7 @@
 #define COMMAND_CURSOR_MOVE_RIGHT 'd'
 #define COMMAND_CURSOR_MOVE_UP 'w'
 #define COMMAND_CURSOR_MOVE_DOWN 's'
+#define COMMAND_ENTER '\n'
 
 void readInput(Paint* paint);
 
