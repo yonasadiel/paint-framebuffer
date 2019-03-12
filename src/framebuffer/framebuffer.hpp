@@ -16,14 +16,12 @@
 #include "../etc/exception.hpp"
 #include "../etc/coordinate.hpp"
 
-class IFrameBuffer
-{
+class IFrameBuffer {
   public:
     virtual void lazyDraw(Coordinate *coordinate, color c) = 0;
 };
 
-class FrameBuffer : public IFrameBuffer
-{
+class FrameBuffer : public IFrameBuffer {
   private:
     color *fbp;
     color *lazy;
@@ -34,24 +32,20 @@ class FrameBuffer : public IFrameBuffer
     long int fbpSize;
 
   public:
-    FrameBuffer()
-    {
+    FrameBuffer() {
         int fbfd = 0;
 
         fbfd = open("/dev/fb0", O_RDWR);
-        if (fbfd == -1)
-        {
+        if (fbfd == -1) {
             throw new Exception("Error: cannot open framebuffer device");
         }
         std::cout << "The framebuffer device was opened successfully." << std::endl;
 
-        if (ioctl(fbfd, FBIOGET_FSCREENINFO, &(this->finfo)) == -1)
-        {
+        if (ioctl(fbfd, FBIOGET_FSCREENINFO, &(this->finfo)) == -1) {
             throw new Exception("Error reading fixed information");
         }
 
-        if (ioctl(fbfd, FBIOGET_VSCREENINFO, &(this->vinfo)) == -1)
-        {
+        if (ioctl(fbfd, FBIOGET_VSCREENINFO, &(this->vinfo)) == -1) {
             throw new Exception("Error reading variable information");
         }
 
@@ -64,8 +58,7 @@ class FrameBuffer : public IFrameBuffer
         std::cout << "Screensize " << this->screensize << std::endl;
 
         this->fbp = (color *)mmap(0, this->screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
-        if (this->fbp == (color *)-1)
-        {
+        if (this->fbp == (color *)-1) {
             throw new Exception("Error: failed to map framebuffer device to memory");
         }
         this->lazy = (color *)malloc(this->screensize);
@@ -80,52 +73,42 @@ class FrameBuffer : public IFrameBuffer
     unsigned int getXLength() const { return this->vinfo.bits_per_pixel; }
     unsigned int getYLength() const { return this->finfo.line_length; }
 
-    virtual void lazyDraw(Coordinate *coordinate, color c)
-    {
+    virtual void lazyDraw(Coordinate *coordinate, color c) {
         int x = coordinate->getX();
         int y = coordinate->getY();
-        if (y >= 0 && y < this->getYRes())
-        {
-            if (x >= 0 && x < this->getXRes())
-            {
+        if (y >= 0 && y < this->getYRes()) {
+            if (x >= 0 && x < this->getXRes()) {
                 long int location = (x + this->getXOffset()) + (y + this->getYOffset()) * this->getYLength() / 4;
                 this->lazy[location] = c;
             }
         }
     }
 
-    virtual color lazyCheck(Coordinate *coordinate)
-    {
+    virtual color lazyCheck(Coordinate *coordinate) {
         int x = coordinate->getX();
         int y = coordinate->getY();
-        if (y >= 0 && y < this->getYRes())
-        {
-            if (x >= 0 && x < this->getXRes())
-            {
+        if (y >= 0 && y < this->getYRes()) {
+            if (x >= 0 && x < this->getXRes()) {
                 long int location = (x + this->getXOffset()) + (y + this->getYOffset()) * this->getYLength() / 4;
                 return this->lazy[location];
             }
         }
     }
 
-    void priorityDraw(Coordinate *coordinate, color c, int priority)
-    {
+    void priorityDraw(Coordinate *coordinate, color c, int priority) {
         //main idea: priority is put in the unused byte of color (unsigned int is 4 bytes while RGB chars uses 3 bytes)
         int currPriority = this->lazyCheck(coordinate) >> 24;
-        if (currPriority <= priority)
-        {
+        if (currPriority <= priority) {
             c += priority << 24;
             this->lazyDraw(coordinate, c);
         }
     }
 
-    void clearScreen()
-    {
+    void clearScreen() {
         memset(this->lazy, 0, this->screensize);
     }
 
-    void draw()
-    {
+    void draw() {
         memcpy(this->fbp, this->lazy, this->screensize);
     }
 };

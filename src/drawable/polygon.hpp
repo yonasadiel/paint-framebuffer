@@ -261,6 +261,7 @@ class Polygon : public Drawable
 
         Coordinate* coordinate = new Coordinate(0, 0);
 		for (int yIt = boundingBox->first->getY(); yIt <= boundingBox->second->getY(); yIt++) {
+            bool fill = false;
             for (int xIt = boundingBox->first->getX(); xIt <= boundingBox->second->getX(); xIt++) {
                 for (int i = 0; i < lines->size(); i++) {
                     BressenhamTuple* tuple = lines->at(i);
@@ -275,9 +276,18 @@ class Polygon : public Drawable
                             }
                         } while (tuple->D <= 0 && tuple->xIt != tuple->xEnd);
                         tuple->D -= 2 * tuple->xD;
-                        if (tuple->yIt != tuple->yEnd) tuple->yIt++;
-                        else tuple->yIt = -1;
+                        if (tuple->yIt != tuple->yEnd) {
+                            tuple->yIt++;
+                            fill = !fill;
+                        } else {
+                            tuple->yIt = -1;
+                        }
                     }
+                }
+                if (fill) {
+                    coordinate->setX(xIt);
+                    coordinate->setY(yIt);
+                    modelBuffer->lazyDraw(coordinate, this->c);
                 }
             }
 		}
