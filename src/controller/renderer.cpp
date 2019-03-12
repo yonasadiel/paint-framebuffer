@@ -7,9 +7,7 @@
 void draw(FrameBuffer *framebuffer, Paint* paint) {
     while (paint->stillRunning()) {
         framebuffer->clearScreen();
-        for (int i = 0; i < paint->layerNum(); i++) {
-            paint->layerAt(i)->draw(framebuffer);
-        }
+        paint->draw(framebuffer);
         framebuffer->draw();
         usleep(10000);
     }

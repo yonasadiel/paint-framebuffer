@@ -2,132 +2,103 @@
 #define COMPOSITE_HPP
 
 #include <iostream>
-#include <utility>
+#include <fstream>
+#include <vector>
 
+#include "../etc/coordinate.hpp"
+#include "drawable.hpp"
 #include "polygon.hpp"
-#include "animated.hpp"
-#include "coordinate.hpp"
 
-class Composite : public Drawable
-{
+class Composite : public Drawable {
 private:
-	Animated** polygonList;
-	int polygonNum;
-	int id;
+	std::vector<Polygon*>* polygons;
+	char id;
 
 public:
-	Composite() : Composite(10, 0) {}
+	Composite(std::string filename, color c, char id = 0) {
+        std::ifstream f(filename);
+		int polygonNum;
 
-	Composite(int maxAnimatedNum, int id){
-		this->polygonNum = 0;
-		this->id = id;
-		this->polygonList = new Animated*[maxAnimatedNum];
+		this->polygons = new std::vector<Polygon*>();
+
+		f >> polygonNum;
+		for (int i = 0; i < polygonNum; i++) {
+			int pointNum;
+			int x, y;
+			std::vector<Coordinate*>* points = new std::vector<Coordinate*>();
+
+			f >> pointNum;
+			for (int j = 0; j < pointNum; j++) {
+				f >> x >> y;
+				points->push_back(new Coordinate(x, y));
+			}
+			this->polygons->push_back(new Polygon(points, c, id));
+		}
+        f.close();
 	}
 
 	~Composite() {
-		delete[] polygonList;
+		for (int i = 0; i < polygons->size(); i++)
+			delete polygons->at(i);
+		delete polygons;
 	}
 
 	char getId() const {
 		return this->id;
 	}
 
-	void addAnimated(Animated* pol) {
-		if (this->polygonNum == 0) {
-			this->polygonList[0] =  pol;
-		} else {
-			int i;
-			for (i = this->polygonNum; i > 0; i--) {
-				if (this->polygonList[i-1]->getZAxis() >= pol->getZAxis()) {
-					this->polygonList[i] = pol;
-					break;
-				} else {
-					this->polygonList[i] = this->polygonList[i-1];
-				}
-			}
-			if (this->polygonList[0]->getZAxis() < pol->getZAxis()){
-				this->polygonList[0] = pol;
-			}
-		}
-		this->polygonNum++;
-	}
-
-	int getAnimatedNum() {
-		return this->polygonNum;
-	}
-
-	Animated** getAnimatedList() {
-		return this->polygonList;
-	}
-
-	void hide() {
-		for (int i= 0; i < this->polygonNum; i++) {
-			this->polygonList[i]->hide();
-		}
-	}
-
 	Coordinate* getAnchor() {
 		int x = 0, y = 0;
-		for (int i= 0; i < this->polygonNum; i++) {
-			Coordinate* temp = this->polygonList[i]->getAnchor();
+		for (int i= 0; i < this->polygons->size(); i++) {
+			Coordinate* temp = this->polygons->at(i)->getAnchor();
 			x += temp->getX();
 			y += temp->getY();
 		}
-		x /= this->polygonNum;
-		y /= this->polygonNum;
+		x /= this->polygons->size();
+		y /= this->polygons->size();
 		Coordinate* compAnchor = new Coordinate(x,y);
 		return compAnchor;
 	}
 
 	void animate() {
-		for (int i= 0; i < this->polygonNum; i++) {
-			this->polygonList[i]->animate();
-		}
+		for (Polygon* polygon : *this->polygons)
+			polygon->animate();
 	}
 
 	void move(int dx, int dy) {
-		for (int i= 0; i < this->polygonNum; i++) {
-			this->polygonList[i]->move(dx, dy);
-		}
+		for (Polygon* polygon : *this->polygons)
+			polygon->move(dx, dy);
 	}
 
 	void moveWithoutAnchor(int dx, int dy) {
-		for (int i= 0; i < this->polygonNum; i++) {
-			this->polygonList[i]->moveWithoutAnchor(dx, dy);
-		}
+		for (Polygon* polygon : *this->polygons)
+			polygon->moveWithoutAnchor(dx, dy);
 	}
 
 	void scale(double scaleFactor) {
-		for (int i= 0; i < this->polygonNum; i++) {
-			this->polygonList[i]->scale(scaleFactor);
-		}
+		for (Polygon* polygon : *this->polygons)
+			polygon->scale(scaleFactor);
 	}
 
 	void linearScale(double scaleFactor) {
-		for (int i= 0; i < this->polygonNum; i++) {
-			this->polygonList[i]->scale(scaleFactor);
-		}
+		for (Polygon* polygon : *this->polygons)
+			polygon->scale(scaleFactor);
 	}
 
 	void rotate(double rotation) {
-		for (int i= 0; i < this->polygonNum; i++) {
-			this->polygonList[i]->rotate(rotation);
-		}
+		for (Polygon* polygon : *this->polygons)
+			polygon->rotate(rotation);
 	}
 
 	void setAnchor(int x, int y) {
-		for (int i= 0; i < this->polygonNum; i++) {
-			this->polygonList[i]->setAnchor(x, y);
-		}
+		for (Polygon* polygon : *this->polygons)
+			polygon->setAnchor(x, y);
 	}
 
-	void draw(IFrameBuffer* fb) {
-		FrameBuffer* temp = (FrameBuffer*) fb;
-		for (int i= 0; i < this->polygonNum; i++) {
-			if (this->polygonList[i]->isOverlapping(new std::pair<Coordinate *, Coordinate *>(new Coordinate(0, 0), new Coordinate(temp->getXRes(), temp->getYRes()))))
-				
-				this->polygonList[i]->draw(fb);
-		}
+	void draw(IFrameBuffer* framebuffer) {
+		for (Polygon* polygon : *this->polygons)
+			polygon->draw((FrameBuffer*) framebuffer);
+		flog("oke");
 	}
 };
 

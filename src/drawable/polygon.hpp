@@ -7,22 +7,14 @@
 #include <utility>
 #include <vector>
 
+#include "../controller/object.hpp"
 #include "../etc/coordinate.hpp"
 #include "../framebuffer/modelbuffer.hpp"
 #include "../framebuffer/framebuffer.hpp"
 #include "drawable.hpp"
 #include "line.hpp"
 
-#define NULL_OBJ 1
-#define PLAYER_OBJ 2
-#define ENEMY_OBJ 3
-#define LASER_OBJ 4
-#define EXPLOSION_OBJ 5
-#define PHYSICAL_OBJ 6
-#define BOMB_OBJ 7
-
-class Polygon : public Drawable
-{
+class Polygon : public Drawable {
   protected:
     std::vector<Coordinate *> *points;
     Coordinate *anchor;
@@ -30,8 +22,6 @@ class Polygon : public Drawable
     double scaleFactor;
     double rotation; // rad
     char id;         // polygon identifier
-    int zAxis;
-    int xfill, yfill;
 
     class BressenhamTuple {
         public:
@@ -65,34 +55,29 @@ class Polygon : public Drawable
     Polygon() {
         this->points = new std::vector<Coordinate *>();
         this->c = CWHITE;
+        this->anchor = new Coordinate(0, 0);
         this->scaleFactor = 1;
         this->rotation = 0;
         this->id = NULL_OBJ;
-        this->zAxis = 0;
-        this->xfill = -1;
-        this->yfill = -1;
     }
 
-    Polygon(std::string filename, color c, char id, int zAxis = 0) : Polygon() {
-        this->zAxis = zAxis;
+    Polygon(std::string filename, color c, char id) : Polygon() {
+        int x, y;
         std::ifstream f(filename);
-        int x, y, minX, maxX, minY, maxY;
-        bool first = true;
         while (f >> x >> y) {
-            if (first) {
-                minX = maxX = x;
-                minY = maxY = y;
-            }
-            first = false;
-            minX = std::min(minX, x);
-            maxX = std::max(maxX, x);
-            minY = std::min(minY, y);
-            maxY = std::max(maxY, y);
             this->addPoint(new Coordinate(x, y));
         }
         f.close();
+        this->setAnchorOnCenter();
         this->c = c;
-        this->anchor = new Coordinate((minX + maxX) / 2, (minY + maxY) / 2);
+        this->id = id;
+    }
+
+    Polygon(std::vector<Coordinate*>* points, color c, char id) : Polygon() {
+        delete this->points;
+        this->points = points;
+        this->setAnchorOnCenter();
+        this->c = c;
         this->id = id;
     }
 
@@ -104,33 +89,27 @@ class Polygon : public Drawable
         delete this->anchor;
     }
 
+    void setAnchorOnCenter() {
+        Coordinate* center = this->getCenter();
+        delete this->anchor;
+        this->anchor = center;
+    }
+
     void moveWithoutAnchor(int dx, int dy) {
         for (int i = 0; i < this->points->size(); i++) {
             this->points->at(i)->move(dx, dy);
         }
     }
 
-    void addPoint(Coordinate *coordinate) {
+    void addPoint(Coordinate* coordinate) {
         this->points->push_back(coordinate);
     }
 
-    Coordinate *getAnchor() const {
-        return this->anchor;
-    }
+    Coordinate* getAnchor() const { return this->anchor; }
 
     void setAnchor(int x, int y) {
         this->anchor->setX(x);
         this->anchor->setY(y);
-    }
-
-    int getZAxis() {
-        return this->zAxis;
-    }
-
-
-    void setFillCoor(int x, int y){
-        this->xfill = x;
-        this->yfill = y;
     }
 
     void move(int dx, int dy) {
@@ -180,43 +159,32 @@ class Polygon : public Drawable
         }
     }
 
-    double getScaleFactor() const {
-        return this->scaleFactor;
-    }
-
-    double getRotation() const {
-        return this->rotation;
-    }
-
-    char getId() const {
-        return this->id;
-    }
+    double getScaleFactor() const { return this->scaleFactor; }
+    double getRotation() const { return this->rotation; }
+    char getId() const { return this->id; }
 
     Coordinate* getTransformedPoint(int i) {
         return this->points->at(i)->transform(this->scaleFactor, this->rotation, this->anchor);
     }
 
     std::pair<Coordinate *, Coordinate *> *getBoundingBox() {
+        int minX, maxX, minY, maxY;
         Coordinate *point = this->getTransformedPoint(0);
-        int minX = point->getX();
-        int maxX = minX;
-        int minY = point->getY();
-        int maxY = minY;
+        minX = maxX = point->getX();
+        minY = maxY = point->getY();
         delete point;
         for (int i = 1; i < this->points->size(); i++) {
             point = this->getTransformedPoint(i);
-            int x = point->getX();
-            int y = point->getY();
-            minX = std::min(minX, x);
-            maxX = std::max(maxX, x);
-            minY = std::min(minY, y);
-            maxY = std::max(maxY, y);
+            minX = std::min(minX, point->getX());
+            maxX = std::max(maxX, point->getX());
+            minY = std::min(minY, point->getY());
+            maxY = std::max(maxY, point->getY());
             delete point;
         }
         return new std::pair<Coordinate *, Coordinate *>(new Coordinate(minX, minY), new Coordinate(maxX, maxY));
     }
 
-    Coordinate *getCenter() {
+    Coordinate* getCenter() {
         std::pair<Coordinate *, Coordinate *> *boundingBox = this->getBoundingBox();
         int x = (boundingBox->first->getX() + boundingBox->second->getX()) / 2;
         int y = (boundingBox->first->getY() + boundingBox->second->getY()) / 2;
@@ -298,8 +266,7 @@ class Polygon : public Drawable
         }
         delete lines;
 
-        FrameBuffer *realframebuffer = (FrameBuffer *) framebuffer;
-        modelBuffer->flush(realframebuffer, this->zAxis);
+        modelBuffer->flush((FrameBuffer *) framebuffer);
 
         delete modelBuffer;
     }
