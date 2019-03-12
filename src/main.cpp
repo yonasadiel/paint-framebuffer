@@ -64,6 +64,7 @@ int main(int argc, char **args)
     Polygon* pesawat = new Polygon("images/pesawat.point", CRED, 1);
     pesawat->move(400, 400);
     pesawat->scale(5);
+    objects->push_back(pesawat);
     objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 8 * framebuffer->getXRes() / 8, 0 * framebuffer->getYRes() / 8, 0x0000FF9F));
     objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 5 * framebuffer->getXRes() / 8, 0 * framebuffer->getYRes() / 8, 0X001FDFBF));
     objects->push_back(new Line(framebuffer->getXRes() / 2, framebuffer->getYRes() / 2, 4 * framebuffer->getXRes() / 8, 0 * framebuffer->getYRes() / 8, 0X003FBFDF));

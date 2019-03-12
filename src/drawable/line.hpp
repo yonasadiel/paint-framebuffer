@@ -73,7 +73,6 @@ class Line : public Drawable
 		int xIt = xStart;
 
 		for (int yIt = yStart; ; yIt++) {
-			flog(yIt); flog(": ");
 			do
 			{
 				Coordinate *coordinate;
