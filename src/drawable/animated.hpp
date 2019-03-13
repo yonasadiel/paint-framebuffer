@@ -26,6 +26,14 @@ class Animated : public Polygon
     std::vector<double> *rotationKeyframes;
 
   public:
+    Animated() : Polygon() {
+        this->loop = false;
+        this->hidden = false;
+        this->hiddenAfterFinish = false;
+        this->maxAnchorVelocity = 0;
+        
+    }
+
     Animated(std::string filename, color c, char id, bool loop = false,
              int maxAnchorVelocity = 0,
              double maxScaleVelocity = 0,

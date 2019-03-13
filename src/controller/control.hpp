@@ -15,6 +15,8 @@
 #define COMMAND_CURSOR_MOVE_UP 'w'
 #define COMMAND_CURSOR_MOVE_DOWN 's'
 #define COMMAND_ENTER '\n'
+#define COMMAND_SELECT '\t'
+#define COMMAND_DELETE '\b'
 
 #define CHOOSE_COLOR_1 '1'
 #define CHOOSE_COLOR_2 '2'

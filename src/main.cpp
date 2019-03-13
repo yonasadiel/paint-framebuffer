@@ -23,7 +23,7 @@ int main(int argc, char **args) {
     }
 
     bool run = true;
-    Paint* paint = new Paint();
+    Paint* paint = new Paint(framebuffer->getXRes(), framebuffer->getYRes());
 
     std::thread *t0 = new std::thread(readInput, paint);
     std::thread *t1 = new std::thread(draw, framebuffer, paint);

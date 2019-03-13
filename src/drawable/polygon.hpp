@@ -89,6 +89,10 @@ class Polygon : public Drawable {
         delete this->anchor;
     }
 
+    color getColor() {
+        return this->c;
+    }
+
     void setColor(color c){
         this->c = c;
     }

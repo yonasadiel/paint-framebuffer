@@ -8,6 +8,7 @@
 #include "../drawable/drawable.hpp"
 #include "../drawable/polygon.hpp"
 #include "../framebuffer/framebuffer.hpp"
+#include "../framebuffer/modelbuffer.hpp"
 
 #define STATE_IDLE 0
 #define STATE_DRAWING_RECTANGLE_FIRST 1
@@ -17,6 +18,8 @@
 #define STATE_DRAWING_TRIANGLE_THIRD 5
 #define STATE_DRAWING_LINE_FIRST 6
 #define STATE_DRAWING_LINE_SECOND 7
+#define STATE_SELECTING_OBJECT 8
+#define STATE_OBJECT_SELECTED 9
 
 class Paint {
 private:
@@ -28,6 +31,7 @@ private:
     unsigned int nextState;
     Polygon* workingPolygon;
     color currentColor;
+    int width, height;
 
 public:
     Paint() {
@@ -39,6 +43,11 @@ public:
         this->currentColor = CWHITE;
         this->state = STATE_IDLE;
         this->nextState = STATE_IDLE;
+    }
+
+    Paint(int canvasWidth, int canvasHeight) : Paint() {
+        this->width = canvasWidth;
+        this->height = canvasHeight;
     }
 
     bool stillRunning() { return this->running; }
@@ -54,9 +63,18 @@ public:
         }
     }
 
-    void draw(FrameBuffer* framebuffer) {
-        for (Drawable* layer : *layers) {
+    void draw(IFrameBuffer* framebuffer, bool drawById = false) {
+        color temp;
+        for (int i = 0; i < layers->size(); i++) {
+            Polygon* layer = (Polygon*)layers->at(i);
+            if (drawById) {
+                temp = (layer)->getColor();
+                (layer)->setColor(i+1);
+            }
             layer->draw(framebuffer);
+            if (drawById) {
+                (layer)->setColor(temp);
+            }
         }
         if (this->workingPolygon != NULL)
             this->workingPolygon->draw(framebuffer);
@@ -68,13 +86,21 @@ public:
         this->layers->push_back(this->workingPolygon);
     }
 
+    void deleteWorkingPolygon() {
+        delete this->workingPolygon;
+        this->hideCursor();
+        this->nextState = STATE_IDLE;
+    }
+
     /*** STATE-related method ***/
 
     bool isIdle() { return this->state == STATE_IDLE; }
+    bool isObjectSelected() {return this->state == STATE_OBJECT_SELECTED; }
     bool isAbleToMoveCursor() { return this->cursorVisibility; }
     void startDrawRectangle() { this->nextState = STATE_DRAWING_RECTANGLE_FIRST; }
     void startDrawTriangle() { this->nextState = STATE_DRAWING_TRIANGLE_FIRST; }
     void startDrawLine() { this->nextState = STATE_DRAWING_LINE_FIRST; }
+    void startSelection() { this->nextState = STATE_SELECTING_OBJECT; }
     void moveCursor(int dx, int dy) {
         this->cursor->move(dx, dy);
         int cursorX = this->cursor->getAnchor()->getX();
@@ -91,14 +117,17 @@ public:
         } else if (this->state == STATE_DRAWING_TRIANGLE_THIRD) {
             this->workingPolygon->pointAt(2)->setX(cursorX);
             this->workingPolygon->pointAt(2)->setY(cursorY);
+        } else if (this->state == STATE_OBJECT_SELECTED) {
+            this->workingPolygon->move(dx, dy);
         }
     }
     void goToNextState() { this->state = this->nextState; }
     void handleClick() {
+        int cursorX = this->cursor->getAnchor()->getX();
+        int cursorY = this->cursor->getAnchor()->getY();
+
         if (this->state == STATE_DRAWING_RECTANGLE_FIRST) {
             this->nextState = STATE_DRAWING_RECTANGLE_SECOND;
-            int cursorX = this->cursor->getAnchor()->getX();
-            int cursorY = this->cursor->getAnchor()->getY();
 
             std::vector<Coordinate*>* points = new std::vector<Coordinate*>();
             points->push_back(new Coordinate(cursorX, cursorY));
@@ -114,8 +143,6 @@ public:
             this->workingPolygon = NULL;
         } else if (this->state == STATE_DRAWING_TRIANGLE_FIRST) {
             this->nextState = STATE_DRAWING_TRIANGLE_SECOND;
-            int cursorX = this->cursor->getAnchor()->getX();
-            int cursorY = this->cursor->getAnchor()->getY();
 
             std::vector<Coordinate*>* points = new std::vector<Coordinate*>();
             points->push_back(new Coordinate(cursorX, cursorY));
@@ -132,8 +159,6 @@ public:
             this->workingPolygon = NULL;
         } else if (this->state == STATE_DRAWING_LINE_FIRST) {
             this->nextState = STATE_DRAWING_LINE_SECOND;
-            int cursorX = this->cursor->getAnchor()->getX();
-            int cursorY = this->cursor->getAnchor()->getY();
 
             std::vector<Coordinate*>* points = new std::vector<Coordinate*>();
             points->push_back(new Coordinate(cursorX, cursorY));
@@ -144,9 +169,30 @@ public:
             this->hideCursor();
             this->nextState = STATE_IDLE;
             this->workingPolygon = NULL;
+        } else if (this->state == STATE_SELECTING_OBJECT) {
+            selectObjectAt(cursorX, cursorY);
+        } else if (this->state == STATE_OBJECT_SELECTED) {
+            this->pushWorkingPolygon();
+            this->hideCursor();
+            this->nextState = STATE_IDLE;
+            this->workingPolygon = NULL;
         }
     }
 
+    void selectObjectAt(int x, int y) {
+        ModelBuffer* selectionBuffer = new ModelBuffer(this->width, this->height, 0, 0);
+        selectionBuffer->clearScreen();
+        this->draw(selectionBuffer, true);
+        int id = ((int)selectionBuffer->lazyCheck(new Coordinate(x, y)))-1;
+        if (id >= 0) {
+            this->workingPolygon = (Polygon *)this->layers->at(id);
+            this->layers->erase(this->layers->begin()+id);
+            this->nextState = STATE_OBJECT_SELECTED;
+        } else {
+            this->nextState = STATE_IDLE;
+            this->hideCursor();
+        }
+    }
 };
 
 #endif

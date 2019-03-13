@@ -52,6 +52,9 @@ void readInput(Paint* paint) {
             } else if (c == COMMAND_DRAW_LINE) {
                 paint->showCursor();
                 paint->startDrawLine();
+            } else if (c == COMMAND_SELECT) {
+                paint->showCursor();
+                paint->startSelection();
             }
         }
 
@@ -64,6 +67,8 @@ void readInput(Paint* paint) {
                 paint->moveCursor(0, -cursorSpeed);
             } else if (c == COMMAND_CURSOR_MOVE_DOWN) {
                 paint->moveCursor(0, cursorSpeed);
+            } else if (c == COMMAND_DELETE) {
+                paint->deleteWorkingPolygon();
             }
         }
 
