@@ -88,6 +88,7 @@ public:
 
     void deleteWorkingPolygon() {
         delete this->workingPolygon;
+        this->workingPolygon = NULL;
         this->hideCursor();
         this->nextState = STATE_IDLE;
     }

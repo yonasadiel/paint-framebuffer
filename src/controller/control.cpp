@@ -15,6 +15,7 @@ void readInput(Paint* paint) {
         char c = getch();
         // we use nextState so it wont execute next interpretation before the state is changed
         unsigned char nextState = state;
+        //printf("\n%d\n", 0+c);
 
         switch (c) {
             case CHOOSE_COLOR_1:
