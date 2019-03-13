@@ -16,6 +16,30 @@ void readInput(Paint* paint) {
         // we use nextState so it wont execute next interpretation before the state is changed
         unsigned char nextState = state;
 
+        switch (c) {
+            case CHOOSE_COLOR_1:
+                paint->setColor(CWHITE);
+                break;
+            case CHOOSE_COLOR_2:
+                paint->setColor(CRED);
+                break;
+            case CHOOSE_COLOR_3:
+                paint->setColor(CGREEN);
+                break;
+            case CHOOSE_COLOR_4:
+                paint->setColor(CBLUE);
+                break;
+            case CHOOSE_COLOR_5:
+                paint->setColor(CYELLOW);
+                break;
+            case CHOOSE_COLOR_6:
+                paint->setColor(CCYAN);
+                break;
+            case CHOOSE_COLOR_7:
+                paint->setColor(CMAGENTA);
+        }
+
+
         if (paint->isIdle()) {
             if (c == COMMAND_QUIT) {
                 paint->terminate();

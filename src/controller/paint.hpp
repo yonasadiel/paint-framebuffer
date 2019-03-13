@@ -27,15 +27,16 @@ private:
     unsigned int state;
     unsigned int nextState;
     Polygon* workingPolygon;
+    color currentColor;
 
 public:
     Paint() {
         this->layers = new std::vector<Drawable*>();
         this->running = true;
         this->cursorVisibility = false;
-        this->cursor = new Composite("images/cursor.composite", CWHITE);
+        this->cursor = new Composite("images/cursor.composite", CGRAY);
         this->cursor->scale(0.5);
-
+        this->currentColor = CWHITE;
         this->state = STATE_IDLE;
         this->nextState = STATE_IDLE;
     }
@@ -45,6 +46,13 @@ public:
 
     void showCursor() { this->cursorVisibility = true; }
     void hideCursor() { this->cursorVisibility = false; }
+
+    void setColor(color c) {
+        this->currentColor = c;
+        if (this->workingPolygon != NULL) {
+            this->workingPolygon->setColor(c);
+        }
+    }
 
     void draw(FrameBuffer* framebuffer) {
         for (Drawable* layer : *layers) {
@@ -98,7 +106,7 @@ public:
             points->push_back(new Coordinate(cursorX, cursorY));
             points->push_back(new Coordinate(cursorX, cursorY));
 
-            this->workingPolygon = new Polygon(points, CWHITE, 0);
+            this->workingPolygon = new Polygon(points, this->currentColor, 0);
         } else if (this->state == STATE_DRAWING_RECTANGLE_SECOND) {
             this->pushWorkingPolygon();
             this->hideCursor();
@@ -114,7 +122,7 @@ public:
             points->push_back(new Coordinate(cursorX, cursorY));
             points->push_back(new Coordinate(cursorX, cursorY));
 
-            this->workingPolygon = new Polygon(points, CWHITE, 0);
+            this->workingPolygon = new Polygon(points, this->currentColor, 0);
         } else if (this->state == STATE_DRAWING_TRIANGLE_SECOND) {
             this->nextState = STATE_DRAWING_TRIANGLE_THIRD;
         } else if (this->state == STATE_DRAWING_TRIANGLE_THIRD) {
@@ -130,7 +138,7 @@ public:
             std::vector<Coordinate*>* points = new std::vector<Coordinate*>();
             points->push_back(new Coordinate(cursorX, cursorY));
             points->push_back(new Coordinate(cursorX, cursorY));
-            this->workingPolygon = new Polygon(points, CWHITE, 0);
+            this->workingPolygon = new Polygon(points, this->currentColor, 0);
         } else if (this->state == STATE_DRAWING_LINE_SECOND) {
             this->pushWorkingPolygon();
             this->hideCursor();

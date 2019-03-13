@@ -89,6 +89,10 @@ class Polygon : public Drawable {
         delete this->anchor;
     }
 
+    void setColor(color c){
+        this->c = c;
+    }
+
     void setAnchorOnCenter() {
         Coordinate* center = this->getCenter();
         delete this->anchor;

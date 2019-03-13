@@ -16,6 +16,15 @@
 #define COMMAND_CURSOR_MOVE_DOWN 's'
 #define COMMAND_ENTER '\n'
 
+#define CHOOSE_COLOR_1 '1'
+#define CHOOSE_COLOR_2 '2'
+#define CHOOSE_COLOR_3 '3'
+#define CHOOSE_COLOR_4 '4'
+#define CHOOSE_COLOR_5 '5'
+#define CHOOSE_COLOR_6 '6'
+#define CHOOSE_COLOR_7 '7'
+
+
 void readInput(Paint* paint);
 
 #endif
