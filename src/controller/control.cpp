@@ -25,6 +25,9 @@ void readInput(Paint* paint) {
             } else if (c == COMMAND_DRAW_TRIANGLE) {
                 paint->showCursor();
                 paint->startDrawTriangle();
+            } else if (c == COMMAND_DRAW_LINE) {
+                paint->showCursor();
+                paint->startDrawLine();
             }
         }
 

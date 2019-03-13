@@ -17,8 +17,8 @@ int main(int argc, char **args) {
     FrameBuffer *framebuffer;
     try {
         framebuffer = new FrameBuffer();
-    } catch (Exception e) {
-        e.print();
+    } catch (Exception* e) {
+        e->print();
         return 1;
     }
 

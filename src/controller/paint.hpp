@@ -15,6 +15,8 @@
 #define STATE_DRAWING_TRIANGLE_FIRST 3
 #define STATE_DRAWING_TRIANGLE_SECOND 4
 #define STATE_DRAWING_TRIANGLE_THIRD 5
+#define STATE_DRAWING_LINE_FIRST 6
+#define STATE_DRAWING_LINE_SECOND 7
 
 class Paint {
 private:
@@ -64,6 +66,7 @@ public:
     bool isAbleToMoveCursor() { return this->cursorVisibility; }
     void startDrawRectangle() { this->nextState = STATE_DRAWING_RECTANGLE_FIRST; }
     void startDrawTriangle() { this->nextState = STATE_DRAWING_TRIANGLE_FIRST; }
+    void startDrawLine() { this->nextState = STATE_DRAWING_LINE_FIRST; }
     void moveCursor(int dx, int dy) {
         this->cursor->move(dx, dy);
         int cursorX = this->cursor->getAnchor()->getX();
@@ -73,7 +76,8 @@ public:
             this->workingPolygon->pointAt(2)->setX(cursorX);
             this->workingPolygon->pointAt(2)->setY(cursorY);
             this->workingPolygon->pointAt(3)->setY(cursorY);
-        } else if (this->state == STATE_DRAWING_TRIANGLE_SECOND) {
+        } else if (this->state == STATE_DRAWING_TRIANGLE_SECOND 
+            || this->state == STATE_DRAWING_LINE_SECOND) {
             this->workingPolygon->pointAt(1)->setX(cursorX);
             this->workingPolygon->pointAt(1)->setY(cursorY);
         } else if (this->state == STATE_DRAWING_TRIANGLE_THIRD) {
@@ -114,6 +118,20 @@ public:
         } else if (this->state == STATE_DRAWING_TRIANGLE_SECOND) {
             this->nextState = STATE_DRAWING_TRIANGLE_THIRD;
         } else if (this->state == STATE_DRAWING_TRIANGLE_THIRD) {
+            this->pushWorkingPolygon();
+            this->hideCursor();
+            this->nextState = STATE_IDLE;
+            this->workingPolygon = NULL;
+        } else if (this->state == STATE_DRAWING_LINE_FIRST) {
+            this->nextState = STATE_DRAWING_LINE_SECOND;
+            int cursorX = this->cursor->getAnchor()->getX();
+            int cursorY = this->cursor->getAnchor()->getY();
+
+            std::vector<Coordinate*>* points = new std::vector<Coordinate*>();
+            points->push_back(new Coordinate(cursorX, cursorY));
+            points->push_back(new Coordinate(cursorX, cursorY));
+            this->workingPolygon = new Polygon(points, CWHITE, 0);
+        } else if (this->state == STATE_DRAWING_LINE_SECOND) {
             this->pushWorkingPolygon();
             this->hideCursor();
             this->nextState = STATE_IDLE;
