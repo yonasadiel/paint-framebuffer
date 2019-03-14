@@ -17,13 +17,13 @@ int main(int argc, char **args) {
     FrameBuffer *framebuffer;
     try {
         framebuffer = new FrameBuffer();
-    } catch (Exception e) {
-        e.print();
+    } catch (Exception* e) {
+        e->print();
         return 1;
     }
 
     bool run = true;
-    Paint* paint = new Paint();
+    Paint* paint = new Paint(framebuffer->getXRes(), framebuffer->getYRes());
 
     std::thread *t0 = new std::thread(readInput, paint);
     std::thread *t1 = new std::thread(draw, framebuffer, paint);

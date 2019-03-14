@@ -117,13 +117,10 @@ class Polygon : public Drawable {
         this->anchor->setY(y);
     }
 
-    void setFillColor(color fillColor) {
-        this->fillColor = fillColor;
-    }
-
-    void setOutlineColor(color outlineColor) {
-        this->outlineColor = outlineColor;
-    }
+    color getFillColor() { return this->fillColor; }
+    color getOutlineColor() { return this->outlineColor; }
+    void setFillColor(color fillColor){ this->fillColor = fillColor; }
+    void setOutlineColor(color outlineColor) { this->outlineColor = outlineColor; }
 
     void move(int dx, int dy) {
         for (int i = 0; i < this->points->size(); i++) {

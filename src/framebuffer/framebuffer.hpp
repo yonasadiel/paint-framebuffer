@@ -19,6 +19,7 @@
 class IFrameBuffer {
   public:
     virtual void lazyDraw(Coordinate *coordinate, color c) = 0;
+    virtual color lazyCheck(Coordinate *coordinate) = 0;
 };
 
 class FrameBuffer : public IFrameBuffer {
@@ -32,7 +33,7 @@ class FrameBuffer : public IFrameBuffer {
     long int fbpSize;
 
   public:
-    FrameBuffer() {
+    FrameBuffer(bool mapToScreen = true) {
         int fbfd = 0;
 
         fbfd = open("/dev/fb0", O_RDWR);
@@ -57,9 +58,11 @@ class FrameBuffer : public IFrameBuffer {
         std::cout << "Color " << this->vinfo.bits_per_pixel << "bpp" << std::endl;
         std::cout << "Screensize " << this->screensize << std::endl;
 
-        this->fbp = (color *)mmap(0, this->screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
-        if (this->fbp == (color *)-1) {
-            throw new Exception("Error: failed to map framebuffer device to memory");
+        if (mapToScreen) {
+            this->fbp = (color *)mmap(0, this->screensize, PROT_READ | PROT_WRITE, MAP_SHARED, fbfd, 0);
+            if (this->fbp == (color *)-1) {
+                throw new Exception("Error: failed to map framebuffer device to memory");
+            }
         }
         this->lazy = (color *)malloc(this->screensize);
 

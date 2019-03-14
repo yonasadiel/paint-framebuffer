@@ -76,7 +76,11 @@ class ModelBuffer : public IFrameBuffer {
 		return CBLACK;
 	}
 
-	void flush(FrameBuffer *fb, int zAxis = 1) {
+	color lazyCheck(Coordinate* coor) {
+		return this->lazyCheck(coor->getX(), coor->getY());
+	}
+
+	void flush(FrameBuffer *fb, int zAxis = 0) {
 		for (int i = 0; i < this->height; i++) {
 			for (int j = 0; j < this->width; j++) {
 				if (this->buffer[i][j] != 0) {
