@@ -7,6 +7,7 @@
 #include "../drawable/composite.hpp"
 #include "../drawable/drawable.hpp"
 #include "../drawable/polygon.hpp"
+#include "../etc/color.hpp"
 #include "../framebuffer/framebuffer.hpp"
 
 #define STATE_IDLE 0
@@ -95,6 +96,7 @@ public:
             points->push_back(new Coordinate(cursorX, cursorY));
 
             this->workingPolygon = new Polygon(points, CWHITE, 0);
+            this->workingPolygon->setOutlineColor(CRED);
         } else if (this->state == STATE_DRAWING_RECTANGLE_SECOND) {
             this->pushWorkingPolygon();
             this->hideCursor();
@@ -111,6 +113,7 @@ public:
             points->push_back(new Coordinate(cursorX, cursorY));
 
             this->workingPolygon = new Polygon(points, CWHITE, 0);
+            this->workingPolygon->setOutlineColor(CRED);
         } else if (this->state == STATE_DRAWING_TRIANGLE_SECOND) {
             this->nextState = STATE_DRAWING_TRIANGLE_THIRD;
         } else if (this->state == STATE_DRAWING_TRIANGLE_THIRD) {
@@ -120,7 +123,6 @@ public:
             this->workingPolygon = NULL;
         }
     }
-
 };
 
 #endif
