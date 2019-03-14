@@ -7,6 +7,7 @@
 #include "../drawable/composite.hpp"
 #include "../drawable/drawable.hpp"
 #include "../drawable/polygon.hpp"
+#include "../etc/color.hpp"
 #include "../framebuffer/framebuffer.hpp"
 #include "../framebuffer/modelbuffer.hpp"
 
@@ -59,10 +60,10 @@ public:
     void showCursor() { this->cursorVisibility = true; }
     void hideCursor() { this->cursorVisibility = false; }
 
-    void setColor(color c) {
-        this->currentColor = c;
+    void setFillColor(color fillColor) {
+        this->currentColor = fillColor;
         if (this->workingPolygon != NULL) {
-            this->workingPolygon->setColor(c);
+            this->workingPolygon->setFillColor(fillColor);
         }
     }
 
@@ -71,12 +72,12 @@ public:
         for (int i = 0; i < layers->size(); i++) {
             Polygon* layer = (Polygon*)layers->at(i);
             if (drawById) {
-                temp = (layer)->getColor();
-                (layer)->setColor(i+1);
+                temp = (layer)->getFillColor();
+                (layer)->setFillColor(i+1);
             }
             layer->draw(framebuffer);
             if (drawById) {
-                (layer)->setColor(temp);
+                (layer)->setFillColor(temp);
             }
         }
         if (this->workingPolygon != NULL)
@@ -144,6 +145,7 @@ public:
             points->push_back(new Coordinate(cursorX, cursorY));
 
             this->workingPolygon = new Polygon(points, this->currentColor, 0);
+            this->workingPolygon->setOutlineColor(CRED);
         } else if (this->state == STATE_DRAWING_RECTANGLE_SECOND) {
             this->workingPolygon->setAnchorOnCenter();
             this->pushWorkingPolygon();
@@ -159,6 +161,7 @@ public:
             points->push_back(new Coordinate(cursorX, cursorY));
 
             this->workingPolygon = new Polygon(points, this->currentColor, 0);
+            this->workingPolygon->setOutlineColor(CRED);
         } else if (this->state == STATE_DRAWING_TRIANGLE_SECOND) {
             this->nextState = STATE_DRAWING_TRIANGLE_THIRD;
         } else if (this->state == STATE_DRAWING_TRIANGLE_THIRD) {
@@ -201,6 +204,17 @@ public:
         } else {
             this->nextState = STATE_IDLE;
             this->hideCursor();
+        }
+    }
+
+    void moveSelected(int x, int y){
+        workingPolygon->move(x, y);
+    }
+
+    void panScreen(int x, int y){
+        for (int i = 0; i < layers->size(); i++){
+            this->workingPolygon = (Polygon *)this->layers->at(i);
+            moveSelected(x, y);
         }
     }
 };
