@@ -7,6 +7,8 @@
 void readInput(Paint* paint) {
     initscr();
     timeout(-1);
+    noecho();
+    cbreak();
 
     int cursorSpeed = 5;
     unsigned char state = STATE_IDLE;
