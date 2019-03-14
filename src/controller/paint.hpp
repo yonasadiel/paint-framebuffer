@@ -21,10 +21,6 @@
 #define STATE_SELECTING_OBJECT 8
 #define STATE_OBJECT_SELECTED 9
 
-#define ROTATE_RIGHT 1
-#define ROTATE_LEFT 2
-#define SCALING_UP 1
-#define SCALING_DOWN 2
 #define ROTATION_SPEED 0.1
 #define SCALING_SPEED 2
 
@@ -109,20 +105,10 @@ public:
     void startDrawTriangle() { this->nextState = STATE_DRAWING_TRIANGLE_FIRST; }
     void startDrawLine() { this->nextState = STATE_DRAWING_LINE_FIRST; }
     void startSelection() { this->nextState = STATE_SELECTING_OBJECT; }
-    void rotateSelectedObject(int direction) { 
-        if (direction == ROTATE_RIGHT) {
-            this->workingPolygon->rotate(ROTATION_SPEED); 
-        } else if (direction == ROTATE_LEFT) {
-            this->workingPolygon->rotate(-ROTATION_SPEED);
-        }
-    }
-    void scaleSelectedObject(int scaleType) {
-        if (scaleType == SCALING_UP) {
-            this->workingPolygon->scale(SCALING_SPEED); 
-        } else if (scaleType == SCALING_DOWN) {
-            this->workingPolygon->scale(1.0/SCALING_SPEED);
-        }
-    }
+    void rotateRight() { this->workingPolygon->rotate(ROTATION_SPEED); }
+    void rotateLeft() { this->workingPolygon->rotate(-ROTATION_SPEED); }
+    void scaleUp() { this->workingPolygon->scale(SCALING_SPEED); }
+    void scaleDown() { this->workingPolygon->scale(1.0/SCALING_SPEED); }
     void moveCursor(int dx, int dy) {
         this->cursor->move(dx, dy);
         int cursorX = this->cursor->getAnchor()->getX();

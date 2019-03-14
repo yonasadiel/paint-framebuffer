@@ -79,13 +79,13 @@ void readInput(Paint* paint) {
 
         if (paint->isObjectSelected()) {
             if (c == COMMAND_ROTATE_RIGHT) {
-                paint->rotateSelectedObject(ROTATE_RIGHT);
+                paint->rotateRight();
             } else if (c == COMMAND_ROTATE_LEFT) {
-                paint->rotateSelectedObject(ROTATE_LEFT);
+                paint->rotateLeft();
             } else if (c == COMMAND_SCALE_UP) {
-                paint->scaleSelectedObject(SCALING_UP);
+                paint->scaleUp();
             } else if (c == COMMAND_SCALE_DOWN) {
-                paint->scaleSelectedObject(SCALING_DOWN);
+                paint->scaleDown();
             }
         }
 
