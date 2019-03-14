@@ -102,6 +102,8 @@ public:
     void startDrawTriangle() { this->nextState = STATE_DRAWING_TRIANGLE_FIRST; }
     void startDrawLine() { this->nextState = STATE_DRAWING_LINE_FIRST; }
     void startSelection() { this->nextState = STATE_SELECTING_OBJECT; }
+    void rotateSelectedObject(double rotation) { this->workingPolygon->rotate(rotation); }
+    void scaleSelectedObject(double scaleFactor) { this->workingPolygon->scale(scaleFactor); }
     void moveCursor(int dx, int dy) {
         this->cursor->move(dx, dy);
         int cursorX = this->cursor->getAnchor()->getX();
@@ -138,6 +140,7 @@ public:
 
             this->workingPolygon = new Polygon(points, this->currentColor, 0);
         } else if (this->state == STATE_DRAWING_RECTANGLE_SECOND) {
+            this->workingPolygon->setAnchorOnCenter();
             this->pushWorkingPolygon();
             this->hideCursor();
             this->nextState = STATE_IDLE;
@@ -154,6 +157,7 @@ public:
         } else if (this->state == STATE_DRAWING_TRIANGLE_SECOND) {
             this->nextState = STATE_DRAWING_TRIANGLE_THIRD;
         } else if (this->state == STATE_DRAWING_TRIANGLE_THIRD) {
+            this->workingPolygon->setAnchorOnCenter();
             this->pushWorkingPolygon();
             this->hideCursor();
             this->nextState = STATE_IDLE;

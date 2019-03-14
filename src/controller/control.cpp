@@ -77,6 +77,18 @@ void readInput(Paint* paint) {
             paint->handleClick();
         }
 
+        if (paint->isObjectSelected()) {
+            if (c == COMMAND_ROTATE_RIGHT) {
+                paint->rotateSelectedObject(0.1);
+            } else if (c == COMMAND_ROTATE_LEFT) {
+                paint->rotateSelectedObject(-0.1);
+            } else if (c == COMMAND_SCALE_UP) {
+                paint->scaleSelectedObject(2.0);
+            } else if (c == COMMAND_SCALE_DOWN) {
+                paint->scaleSelectedObject(0.5);
+            }
+        }
+
         paint->goToNextState();
     }
     endwin();
