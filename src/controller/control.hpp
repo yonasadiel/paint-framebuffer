@@ -17,6 +17,10 @@
 #define COMMAND_ENTER '\n'
 #define COMMAND_SELECT '\t'
 #define COMMAND_DELETE '\\'
+#define COMMAND_ROTATE_RIGHT 'e'
+#define COMMAND_ROTATE_LEFT 'q'
+#define COMMAND_SCALE_UP '='
+#define COMMAND_SCALE_DOWN '-'
 
 #define CHOOSE_COLOR_1 '1'
 #define CHOOSE_COLOR_2 '2'
@@ -25,7 +29,6 @@
 #define CHOOSE_COLOR_5 '5'
 #define CHOOSE_COLOR_6 '6'
 #define CHOOSE_COLOR_7 '7'
-
 
 void readInput(Paint* paint);
 
