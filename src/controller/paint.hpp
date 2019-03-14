@@ -203,6 +203,17 @@ public:
             this->hideCursor();
         }
     }
+
+    void moveSelected(int x, int y){
+        workingPolygon->move(x, y);
+    }
+
+    void panScreen(int x, int y){
+        for (int i = 0; i < layers->size(); i++){
+            this->workingPolygon = (Polygon *)this->layers->at(i);
+            moveSelected(x, y);
+        }
+    }
 };
 
 #endif

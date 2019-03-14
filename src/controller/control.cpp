@@ -9,6 +9,7 @@ void readInput(Paint* paint) {
     timeout(-1);
 
     int cursorSpeed = 5;
+    int panSpeed = 5;
     unsigned char state = STATE_IDLE;
 
     while (paint->stillRunning()) {
@@ -56,6 +57,14 @@ void readInput(Paint* paint) {
             } else if (c == COMMAND_SELECT) {
                 paint->showCursor();
                 paint->startSelection();
+            } else if (c == COMMAND_PAN_LEFT) {
+                paint->panScreen(-panSpeed, 0);
+            } else if (c == COMMAND_PAN_RIGHT) {
+                paint->panScreen(panSpeed, 0);
+            } else if (c == COMMAND_PAN_UP) {
+                paint->panScreen(0, -panSpeed);
+            } else if (c == COMMAND_PAN_DOWN) {
+                paint->panScreen(0, panSpeed);
             }
         }
 
