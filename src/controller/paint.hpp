@@ -21,6 +21,9 @@
 #define STATE_SELECTING_OBJECT 8
 #define STATE_OBJECT_SELECTED 9
 
+#define ROTATION_SPEED 0.1
+#define SCALING_SPEED 2
+
 class Paint {
 private:
     std::vector<Drawable*>* layers;
@@ -102,6 +105,10 @@ public:
     void startDrawTriangle() { this->nextState = STATE_DRAWING_TRIANGLE_FIRST; }
     void startDrawLine() { this->nextState = STATE_DRAWING_LINE_FIRST; }
     void startSelection() { this->nextState = STATE_SELECTING_OBJECT; }
+    void rotateRight() { this->workingPolygon->rotate(ROTATION_SPEED); }
+    void rotateLeft() { this->workingPolygon->rotate(-ROTATION_SPEED); }
+    void scaleUp() { this->workingPolygon->scale(SCALING_SPEED); }
+    void scaleDown() { this->workingPolygon->scale(1.0/SCALING_SPEED); }
     void moveCursor(int dx, int dy) {
         this->cursor->move(dx, dy);
         int cursorX = this->cursor->getAnchor()->getX();
@@ -138,6 +145,7 @@ public:
 
             this->workingPolygon = new Polygon(points, this->currentColor, 0);
         } else if (this->state == STATE_DRAWING_RECTANGLE_SECOND) {
+            this->workingPolygon->setAnchorOnCenter();
             this->pushWorkingPolygon();
             this->hideCursor();
             this->nextState = STATE_IDLE;
@@ -154,6 +162,7 @@ public:
         } else if (this->state == STATE_DRAWING_TRIANGLE_SECOND) {
             this->nextState = STATE_DRAWING_TRIANGLE_THIRD;
         } else if (this->state == STATE_DRAWING_TRIANGLE_THIRD) {
+            this->workingPolygon->setAnchorOnCenter();
             this->pushWorkingPolygon();
             this->hideCursor();
             this->nextState = STATE_IDLE;
