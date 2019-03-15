@@ -18,7 +18,8 @@ class Polygon : public Drawable {
   protected:
     std::vector<Coordinate *> *points;
     Coordinate *anchor;
-    color c;
+    color fillColor;
+    color outlineColor;
     double scaleFactor;
     double rotation; // rad
     char id;         // polygon identifier
@@ -54,7 +55,8 @@ class Polygon : public Drawable {
   public:
     Polygon() {
         this->points = new std::vector<Coordinate *>();
-        this->c = CWHITE;
+        this->fillColor = CWHITE;
+        this->outlineColor = CWHITE;
         this->anchor = new Coordinate(0, 0);
         this->scaleFactor = 1;
         this->rotation = 0;
@@ -69,7 +71,8 @@ class Polygon : public Drawable {
         }
         f.close();
         this->setAnchorOnCenter();
-        this->c = c;
+        this->fillColor = c;
+        this->outlineColor = c;
         this->id = id;
     }
 
@@ -77,7 +80,8 @@ class Polygon : public Drawable {
         delete this->points;
         this->points = points;
         this->setAnchorOnCenter();
-        this->c = c;
+        this->fillColor = c;
+        this->outlineColor = c;
         this->id = id;
     }
 
@@ -87,14 +91,6 @@ class Polygon : public Drawable {
         }
         delete this->points;
         delete this->anchor;
-    }
-
-    color getColor() {
-        return this->c;
-    }
-
-    void setColor(color c){
-        this->c = c;
     }
 
     void setAnchorOnCenter() {
@@ -120,6 +116,11 @@ class Polygon : public Drawable {
         this->anchor->setX(x);
         this->anchor->setY(y);
     }
+
+    color getFillColor() { return this->fillColor; }
+    color getOutlineColor() { return this->outlineColor; }
+    void setFillColor(color fillColor){ this->fillColor = fillColor; }
+    void setOutlineColor(color outlineColor) { this->outlineColor = outlineColor; }
 
     void move(int dx, int dy) {
         for (int i = 0; i < this->points->size(); i++) {
@@ -240,22 +241,24 @@ class Polygon : public Drawable {
 		for (int yIt = boundingBox->first->getY(); yIt <= boundingBox->second->getY(); yIt++) {
             bool fill = false;
             for (int xIt = boundingBox->first->getX(); xIt <= boundingBox->second->getX(); xIt++) {
+                bool colored = false;
                 for (int i = 0; i < lines->size(); i++) {
                     BressenhamTuple* tuple = lines->at(i);
                     if (tuple->yIt == yIt && tuple->xIt == xIt) {
                         do {
                             coordinate->setX(tuple->xIt);
                             coordinate->setY(tuple->yIt);
-                            modelBuffer->lazyDraw(coordinate, this->c);
+                            modelBuffer->lazyDraw(coordinate, this->outlineColor);
                             if (tuple->D <= 0) {
                                 tuple->D += 2 * tuple->yD;
                                 tuple->xIt += tuple->xSigned;
                             }
                         } while (tuple->D <= 0 && tuple->xIt != tuple->xEnd);
                         tuple->D -= 2 * tuple->xD;
+                        colored = true;
+                        fill = !fill;
                         if (tuple->yIt != tuple->yEnd) {
                             tuple->yIt++;
-                            fill = !fill;
                         } else {
                             tuple->yIt = -1;
                         }
@@ -264,7 +267,7 @@ class Polygon : public Drawable {
                 if (fill) {
                     coordinate->setX(xIt);
                     coordinate->setY(yIt);
-                    modelBuffer->lazyDraw(coordinate, this->c);
+                    if (!colored) modelBuffer->lazyDraw(coordinate, this->fillColor);
                 }
             }
 		}
@@ -286,7 +289,7 @@ class Polygon : public Drawable {
         for (int i = 0; i < nLines; i++) {
             Coordinate *c1 = this->getTransformedPoint(i);
             Coordinate *c2 = this->getTransformedPoint((i + 1) % nLines);
-            Line *line = new Line(c1->getX(), c1->getY(), c2->getX(), c2->getY(), this->c);
+            Line *line = new Line(c1->getX(), c1->getY(), c2->getX(), c2->getY(), this->outlineColor);
             line->draw(modelBuffer);
             delete c1;
             delete c2;
