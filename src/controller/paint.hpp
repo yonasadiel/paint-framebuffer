@@ -101,6 +101,10 @@ public:
         this->layers->push_back(this->workingPolygon);
     }
 
+    void pushDrawable(Drawable* drawable) {
+        this->layers->push_back(drawable);
+    }
+
     void deleteWorkingPolygon() {
         delete this->workingPolygon;
         this->workingPolygon = NULL;
