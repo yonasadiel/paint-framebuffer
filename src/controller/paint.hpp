@@ -7,6 +7,7 @@
 #include "../drawable/composite.hpp"
 #include "../drawable/drawable.hpp"
 #include "../drawable/polygon.hpp"
+#include "../drawable/animated.hpp"
 #include "../etc/color.hpp"
 #include "../framebuffer/framebuffer.hpp"
 #include "../framebuffer/modelbuffer.hpp"
@@ -21,9 +22,10 @@
 #define STATE_DRAWING_LINE_SECOND 7
 #define STATE_SELECTING_OBJECT 8
 #define STATE_OBJECT_SELECTED 9
+#define STATE_RECORDING_ANIMATION 10
 
 #define ROTATION_SPEED 0.1
-#define SCALING_SPEED 2
+#define SCALING_SPEED 1.2
 
 class Paint {
 private:
@@ -31,9 +33,10 @@ private:
     Composite* cursor;
     bool cursorVisibility;
     bool running;
+    bool recording;
     unsigned int state;
     unsigned int nextState;
-    Polygon* workingPolygon;
+    Animated* workingPolygon;
     color currentColor;
     int currentPattern;
     int width, height;
@@ -49,6 +52,7 @@ public:
         this->currentPattern = 0;
         this->state = STATE_IDLE;
         this->nextState = STATE_IDLE;
+        this->recording = false;
     }
 
     Paint(int canvasWidth, int canvasHeight) : Paint() {
@@ -77,16 +81,20 @@ public:
     }
 
     void draw(IFrameBuffer* framebuffer, bool drawById = false) {
-        color temp;
+        color temp1, temp2;
         for (int i = 0; i < layers->size(); i++) {
-            Polygon* layer = (Polygon*)layers->at(i);
+            Animated* layer = (Animated*)layers->at(i);
+            layer->animate();
             if (drawById) {
-                temp = (layer)->getFillColor();
+                temp1 = (layer)->getFillColor();
+                temp2 = (layer)->getOutlineColor();
                 (layer)->setFillColor(i+1);
+                (layer)->setOutlineColor(i+1);
             }
             layer->draw(framebuffer);
             if (drawById) {
-                (layer)->setFillColor(temp);
+                (layer)->setFillColor(temp1);
+                (layer)->setOutlineColor(temp2);
             }
         }
         if (this->workingPolygon != NULL)
@@ -111,6 +119,7 @@ public:
     bool isIdle() { return this->state == STATE_IDLE; }
     bool isObjectSelected() {return this->state == STATE_OBJECT_SELECTED; }
     bool isAbleToMoveCursor() { return this->cursorVisibility; }
+    bool isRecording() {return this->state == STATE_RECORDING_ANIMATION; }
     void startDrawRectangle() { this->nextState = STATE_DRAWING_RECTANGLE_FIRST; }
     void startDrawTriangle() { this->nextState = STATE_DRAWING_TRIANGLE_FIRST; }
     void startDrawLine() { this->nextState = STATE_DRAWING_LINE_FIRST; }
@@ -135,7 +144,7 @@ public:
         } else if (this->state == STATE_DRAWING_TRIANGLE_THIRD) {
             this->workingPolygon->pointAt(2)->setX(cursorX);
             this->workingPolygon->pointAt(2)->setY(cursorY);
-        } else if (this->state == STATE_OBJECT_SELECTED) {
+        } else if (this->state == STATE_OBJECT_SELECTED || this->state == STATE_RECORDING_ANIMATION) {
             this->workingPolygon->move(dx, dy);
         }
     }
@@ -153,7 +162,7 @@ public:
             points->push_back(new Coordinate(cursorX, cursorY));
             points->push_back(new Coordinate(cursorX, cursorY));
 
-            this->workingPolygon = new Polygon(points, this->currentColor, 0);
+            this->workingPolygon = new Animated(points, this->currentColor, 0, false);
             this->workingPolygon->setOutlineColor(CRED);
         } else if (this->state == STATE_DRAWING_RECTANGLE_SECOND) {
             this->workingPolygon->setAnchorOnCenter();
@@ -169,7 +178,7 @@ public:
             points->push_back(new Coordinate(cursorX, cursorY));
             points->push_back(new Coordinate(cursorX, cursorY));
 
-            this->workingPolygon = new Polygon(points, this->currentColor, 0);
+            this->workingPolygon = new Animated(points, this->currentColor, 0, false);
             this->workingPolygon->setOutlineColor(CRED);
         } else if (this->state == STATE_DRAWING_TRIANGLE_SECOND) {
             this->nextState = STATE_DRAWING_TRIANGLE_THIRD;
@@ -185,7 +194,7 @@ public:
             std::vector<Coordinate*>* points = new std::vector<Coordinate*>();
             points->push_back(new Coordinate(cursorX, cursorY));
             points->push_back(new Coordinate(cursorX, cursorY));
-            this->workingPolygon = new Polygon(points, this->currentColor, 0);
+            this->workingPolygon = new Animated(points, this->currentColor, 0, false);
         } else if (this->state == STATE_DRAWING_LINE_SECOND) {
             this->pushWorkingPolygon();
             this->hideCursor();
@@ -198,6 +207,8 @@ public:
             this->hideCursor();
             this->nextState = STATE_IDLE;
             this->workingPolygon = NULL;
+        } else if (this->state == STATE_RECORDING_ANIMATION) {
+            this->addAnimationKeyframe();
         }
     }
 
@@ -207,7 +218,7 @@ public:
         this->draw(selectionBuffer, true);
         int id = ((int)selectionBuffer->lazyCheck(new Coordinate(x, y)))-1;
         if (id >= 0) {
-            this->workingPolygon = (Polygon *)this->layers->at(id);
+            this->workingPolygon = (Animated *)this->layers->at(id);
             this->layers->erase(this->layers->begin()+id);
             this->nextState = STATE_OBJECT_SELECTED;
         } else {
@@ -222,9 +233,31 @@ public:
 
     void panScreen(int x, int y){
         for (int i = 0; i < layers->size(); i++){
-            this->workingPolygon = (Polygon *)this->layers->at(i);
+            this->workingPolygon = (Animated *)this->layers->at(i);
             moveSelected(x, y);
         }
+    }
+
+    void startRecording() {
+        this->nextState = STATE_RECORDING_ANIMATION;
+    }
+
+    void stopRecording() {
+        this->workingPolygon->startAnimation(true, 10, 0.05, 0.05);
+        this->pushWorkingPolygon();
+        this->workingPolygon = NULL;
+        this->nextState = STATE_IDLE;
+        this->hideCursor();
+    }
+
+    void addAnimationKeyframe() {
+        double rotation = this->workingPolygon->getRotation();
+        double scale = this->workingPolygon->getScaleFactor();
+        Coordinate* curr = this->workingPolygon->getAnchor();
+        Coordinate* anchorkeyframe = new Coordinate(curr->getX(), curr->getY());
+        this->workingPolygon->addAnchorKeyframe(anchorkeyframe);
+        this->workingPolygon->addScaleKeyframe(scale);
+        this->workingPolygon->addRotationKeyframe(rotation);
     }
 };
 
