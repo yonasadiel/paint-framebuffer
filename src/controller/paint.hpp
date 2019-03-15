@@ -8,6 +8,7 @@
 #include "../drawable/composite.hpp"
 #include "../drawable/drawable.hpp"
 #include "../drawable/polygon.hpp"
+#include "../drawable/rasterized.hpp"
 #include "../framebuffer/framebuffer.hpp"
 #include "../framebuffer/modelbuffer.hpp"
 
