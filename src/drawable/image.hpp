@@ -6,53 +6,49 @@
 
 #include "drawable.hpp"
 
-struct Pixel {
-    int red;
-    int green;
-    int blue;
-};
 
-class Image : public Drawable {
+class Image {
 private:
-    struct Pixel** pixels;
     int height;
     int width;
     char id;
 
 public:
-    Image(char* filename, int height = 16, int width = 16, char id = 0) {
+    unsigned int** pixels;
+
+    Image(std::string filename, int height = 16, int width = 16) {
         std::ifstream f(filename);
-        int b, g, r;
+        unsigned int b, g, r;
 
         this->height = height;
         this->width = width;
 
-        pixels = new Pixel*[height];
-        for (int i = 0; i < height; i++) {
-            pixels[i] = new Pixel[width];
+        pixels = new unsigned int*[width];
+        for (int i = 0; i < width; i++) {
+            pixels[i] = new unsigned int[height];
         }
     
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; j < width; j++) {
-				f >> b >> g >> r;
-				pixels[i][j].blue = b;
-                pixels[i][j].green = g;
-                pixels[i][j].red = r;
+		for (int i = 0; i < width; i++) {
+			for (int j = 0; j < height; j++) {
+				f >> r >> g >> b;
+				pixels[j][i] = r << 16 + g << 8 + b;
 			}
 		}
         f.close();
     }
 
-    char getId const {
-        return this->id;
+    int getHeight() {
+        return height;
     }
 
-    void draw(IFrameBuffer *framebuffer) {
-
+    int getWidth() {
+        return width;
     }
 
-    void animate() {
-        
+    void printPixel() {
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
+                std::cout << pixels[i][j] << std::endl;
     }
 };
 

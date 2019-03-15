@@ -34,6 +34,14 @@
 #define CHOOSE_COLOR_6 '6'
 #define CHOOSE_COLOR_7 '7'
 
+#define CHOOSE_PATTERN_1 '!'
+#define CHOOSE_PATTERN_2 '@'
+#define CHOOSE_PATTERN_3 '#'
+#define CHOOSE_PATTERN_4 '$'
+#define CHOOSE_PATTERN_5 '%'
+#define CHOOSE_PATTERN_6 '^'
+#define CHOOSE_PATTERN_7 '&'
+
 void readInput(Paint* paint);
 
 #endif
