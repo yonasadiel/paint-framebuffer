@@ -10,6 +10,7 @@
 #include "../drawable/polygon.hpp"
 #include "../drawable/rasterized.hpp"
 #include "../etc/color.hpp"
+#include "../etc/image.hpp"
 #include "../framebuffer/framebuffer.hpp"
 #include "../framebuffer/modelbuffer.hpp"
 
@@ -96,6 +97,35 @@ public:
             this->workingPolygon->draw(framebuffer);
         if (this->cursorVisibility)
             this->cursor->draw(framebuffer);
+    }
+
+    image getSnapshot() {
+        ModelBuffer* mb = new ModelBuffer(this->width, this->height, 0, 0);
+        this->draw(mb);
+
+        color** buffer = mb->getBuffer();
+        pixel** pixels = new pixel*[this->height]; 
+
+		for (int row = 0; row < this->height; row++) {
+            pixels[row] = new pixel[this->width];
+            for (int column = 0; column < this->width; column++) {
+                if (row >= 0 && row < this->width) {
+                    if (column >= 0 && column < this->height) {
+                        pixels[row][column].alpha = (buffer[row][column] & 0xFF000000) >> 24;
+                        pixels[row][column].red = (buffer[row][column] & CRED) >> 16;
+                        pixels[row][column].green = (buffer[row][column] & CGREEN) >> 8;
+                        pixels[row][column].blue = buffer[row][column] & CBLUE;
+                    }
+                }
+            }
+		}
+
+        image img;
+        img.pixels = pixels;
+        img.width = this->width;
+        img.height = this->height;
+
+        return img;
     }
 
     void pushWorkingPolygon() {

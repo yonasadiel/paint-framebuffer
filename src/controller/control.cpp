@@ -39,6 +39,8 @@ char* readLine() {
     return buffer;
 }
 
+image mImage;
+
 image readPNG(char *filename) {
     int width, height;
     png_byte color_type;
@@ -112,6 +114,48 @@ image readPNG(char *filename) {
     fclose(fp);
 
     return img;
+}
+
+void writePNG(char *filename, image img) {
+    FILE *fp = fopen(filename, "wb");
+    if(!fp) abort();
+
+    png_structp png = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if (!png) abort();
+
+    png_infop info = png_create_info_struct(png);
+    if (!info) abort();
+
+    if (setjmp(png_jmpbuf(png))) abort();
+
+    png_init_io(png, fp);
+
+    png_set_IHDR(
+        png,
+        info,
+        img.width, img.height,
+        8,
+        PNG_COLOR_TYPE_RGBA,
+        PNG_INTERLACE_NONE,
+        PNG_COMPRESSION_TYPE_DEFAULT,
+        PNG_FILTER_TYPE_DEFAULT
+    );
+    png_write_info(png, info);
+
+    png_bytep row = (png_bytep) malloc(4 * img.width * sizeof(png_byte));
+    int x, y;
+    for (y = 0; y < img.height ; y++) {
+        for (x = 0 ; x < img.width ; x++) {
+            row[x*4 + 0] = img.pixels[y][x].red;
+            row[x*4 + 1] = img.pixels[y][x].green;
+            row[x*4 + 2] = img.pixels[y][x].blue;
+            row[x*4 + 3] = 0xFF;
+        }
+        png_write_row(png, row);
+    }
+    png_write_end(png, NULL);
+
+    fclose(fp);
 }
 
 void readInput(Paint* paint) {
@@ -225,6 +269,11 @@ void readInput(Paint* paint) {
                 std::cout << "\bEnter filename: ";
                 char* filename = readLine();
                 std::cout << "\rSaving to file " << filename << "....\n\r";
+
+                image img = paint->getSnapshot();
+
+                writePNG(filename, img);
+
                 std::cout << "Successfully Saved!\n\r";
                 std::cout << "Press any key to continue...";
                 getchar();
@@ -233,6 +282,7 @@ void readInput(Paint* paint) {
                 char* filename = readLine();
                 std::cout << "\rLoading from file " << filename << "....\n\r";
                 image img = readPNG(filename);
+                mImage = img;
                 
                 Rasterized* r = new Rasterized(img.pixels, img.width, img.height, 0, 0);
                 paint->pushDrawable(r);
