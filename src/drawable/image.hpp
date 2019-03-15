@@ -32,8 +32,6 @@ public:
 			for (int j = 0; j < height; j++) {
 				f >> r >> g >> b;
 				pixels[j][i] = ((r & 0xff) << 16) + ((g & 0xff) << 8) + (b & 0xff);
-                std::cout << r << " " << g << " " << b << " " << std::endl;
-                
 			}
 		}
         f.close();
