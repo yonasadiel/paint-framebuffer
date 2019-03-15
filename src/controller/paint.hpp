@@ -96,12 +96,14 @@ public:
 
     void draw(IFrameBuffer* framebuffer, bool drawById = false) {
         color temp1, temp2;
+        int tempMode;
         for (int i = 0; i < layers->size(); i++) {
             Animated* layer = (Animated*)layers->at(i);
             layer->animate();
             if (drawById) {
                 temp1 = (layer)->getFillColor();
                 temp2 = (layer)->getOutlineColor();
+                tempMode = layer->getMode();
                 (layer)->setFillColor(i+1);
                 (layer)->setOutlineColor(i+1);
             }
@@ -109,6 +111,7 @@ public:
             if (drawById) {
                 (layer)->setFillColor(temp1);
                 (layer)->setOutlineColor(temp2);
+                layer->setMode(tempMode);
             }
         }
         if (this->workingPolygon != NULL)
