@@ -41,6 +41,28 @@ void readInput(Paint* paint) {
                 break;
             case CHOOSE_COLOR_7:
                 paint->setFillColor(CMAGENTA);
+                break;
+            case CHOOSE_PATTERN_1:
+                paint->setPattern(0);
+                break;
+            case CHOOSE_PATTERN_2:
+                paint->setPattern(1);
+                break;
+            case CHOOSE_PATTERN_3:
+                paint->setPattern(2);
+                break;
+            case CHOOSE_PATTERN_4:
+                paint->setPattern(3);
+                break;
+            case CHOOSE_PATTERN_5:
+                paint->setPattern(4);
+                break;
+            case CHOOSE_PATTERN_6:
+                paint->setPattern(5);
+                break;
+            case CHOOSE_PATTERN_7:
+                paint->setPattern(6);
+                break;
         }
 
 

@@ -9,6 +9,7 @@
 
 #include "../controller/object.hpp"
 #include "../etc/coordinate.hpp"
+#include "../etc/pattern.hpp"
 #include "../framebuffer/modelbuffer.hpp"
 #include "../framebuffer/framebuffer.hpp"
 #include "drawable.hpp"
@@ -20,9 +21,12 @@ class Polygon : public Drawable {
     Coordinate *anchor;
     color fillColor;
     color outlineColor;
+    int pattern; // src/etc/pattern.hpp
+    int mode; // 0 = color, 1 = pattern
     double scaleFactor;
     double rotation; // rad
     char id;         // polygon identifier
+    PatternFactory patternFactory;
 
     class BressenhamTuple {
         public:
@@ -56,11 +60,13 @@ class Polygon : public Drawable {
     Polygon() {
         this->points = new std::vector<Coordinate *>();
         this->fillColor = CWHITE;
+        this->pattern = 0;
         this->outlineColor = CWHITE;
         this->anchor = new Coordinate(0, 0);
         this->scaleFactor = 1;
         this->rotation = 0;
         this->id = NULL_OBJ;
+        this->mode = 0;
     }
 
     Polygon(std::string filename, color c, char id) : Polygon() {
@@ -72,6 +78,7 @@ class Polygon : public Drawable {
         f.close();
         this->setAnchorOnCenter();
         this->fillColor = c;
+        this->pattern = 0;
         this->outlineColor = c;
         this->id = id;
     }
@@ -118,8 +125,16 @@ class Polygon : public Drawable {
     }
 
     color getFillColor() { return this->fillColor; }
+    color getPattern() { return this->pattern; }
     color getOutlineColor() { return this->outlineColor; }
-    void setFillColor(color fillColor){ this->fillColor = fillColor; }
+    void setFillColor(color fillColor){
+        this->fillColor = fillColor;
+        this->mode = 0;
+    }
+    void setPattern(color pattern){
+        this->pattern = pattern;
+        this->mode = 1;
+    }
     void setOutlineColor(color outlineColor) { this->outlineColor = outlineColor; }
 
     void move(int dx, int dy) {
@@ -267,7 +282,13 @@ class Polygon : public Drawable {
                 if (fill) {
                     coordinate->setX(xIt);
                     coordinate->setY(yIt);
-                    if (!colored) modelBuffer->lazyDraw(coordinate, this->fillColor);
+                    if (mode == 0) {
+                        if (!colored) modelBuffer->lazyDraw(coordinate, this->fillColor);
+                    } else { //mode = 1
+                        unsigned int pixel = patternFactory.pat[pattern]->pixels[xIt%16][yIt%16];
+
+                        if (!colored) modelBuffer->lazyDraw(coordinate, pixel);
+                    }
                 }
             }
 		}

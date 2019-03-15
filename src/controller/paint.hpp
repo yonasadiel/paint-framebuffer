@@ -35,6 +35,7 @@ private:
     unsigned int nextState;
     Polygon* workingPolygon;
     color currentColor;
+    int currentPattern;
     int width, height;
 
 public:
@@ -45,6 +46,7 @@ public:
         this->cursor = new Composite("images/cursor.composite", CGRAY);
         this->cursor->scale(0.5);
         this->currentColor = CWHITE;
+        this->currentPattern = 0;
         this->state = STATE_IDLE;
         this->nextState = STATE_IDLE;
     }
@@ -64,6 +66,13 @@ public:
         this->currentColor = fillColor;
         if (this->workingPolygon != NULL) {
             this->workingPolygon->setFillColor(fillColor);
+        }
+    }
+
+    void setPattern(int pattern) {
+        this->currentPattern = pattern;
+        if (this->workingPolygon != NULL) {
+            this->workingPolygon->setPattern(pattern);
         }
     }
 
