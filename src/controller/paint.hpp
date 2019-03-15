@@ -78,7 +78,8 @@ public:
 
     void showCursor() { this->cursorVisibility = true; }
     void hideCursor() { this->cursorVisibility = false; }
-
+    int getCanvasWidth(){ return this->width;}
+    int getCanvasHeight(){ return this->height;}
     void setFillColor(color fillColor) {
         this->currentColor = fillColor;
         if (this->workingPolygon != NULL) {
