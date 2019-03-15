@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 
+#include "pnghandler.hpp"
 #include "../drawable/composite.hpp"
 #include "../drawable/drawable.hpp"
 #include "../drawable/polygon.hpp"
@@ -46,6 +47,7 @@ private:
     color currentColor;
     int currentPattern;
     int width, height;
+    Rasterized* menu;
 
 public:
     Paint() {
@@ -60,6 +62,10 @@ public:
         this->state = STATE_IDLE;
         this->nextState = STATE_IDLE;
         this->recording = false;
+
+        char filename[] = "images/png/Menu.png";
+        pixelsbox pxl = readPNG(filename);
+        this->menu = new Rasterized(pxl.pixels, pxl.width, pxl.height/2, this->getCanvasWidth()*5/6, 0);
     }
 
     Paint(int canvasWidth, int canvasHeight) : Paint() {
@@ -71,8 +77,8 @@ public:
     bool stillRunning() { return this->running; }
     bool isTextMode() { return this->textMode; }
     void startTextMode() { this->textMode = true; }
-    void exitTextMode() { 
-        this->textMode = false; 
+    void exitTextMode() {
+        this->textMode = false;
         this->state = STATE_IDLE;
     }
     void terminate() { this->running = false; }
@@ -119,6 +125,7 @@ public:
             this->workingPolygon->draw(framebuffer);
         if (this->cursorVisibility)
             this->cursor->draw(framebuffer);
+        this->menu->draw(framebuffer);
     }
 
     pixelsbox getSnapshot() {
