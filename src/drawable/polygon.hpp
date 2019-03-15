@@ -135,12 +135,6 @@ class Polygon : public Drawable {
         this->pattern = pattern;
         this->mode = 1;
     }
-    int getMode() {
-        return this->mode;
-    }
-    void setMode(int mode) {
-        this->mode = mode;
-    }
     void setOutlineColor(color outlineColor) { this->outlineColor = outlineColor; }
 
     void move(int dx, int dy) {
@@ -196,6 +190,15 @@ class Polygon : public Drawable {
 
     Coordinate* getTransformedPoint(int i) {
         return this->points->at(i)->transform(this->scaleFactor, this->rotation, this->anchor);
+    }
+
+    void dilate(Coordinate* coor, double scaleFactor){
+        for (int i = 0; i < points->size(); i++) {
+            points->at(i)->setX((points->at(i)->getX() - coor->getX())*scaleFactor + coor->getY());
+            points->at(i)->setY((points->at(i)->getY() - coor->getY())*scaleFactor + coor->getY());
+        }
+        anchor->setX((anchor->getX() - coor->getX())*scaleFactor + coor->getX());
+        anchor->setY((anchor->getY() - coor->getY())*scaleFactor + coor->getY());
     }
 
     std::pair<Coordinate *, Coordinate *> *getBoundingBox() {
@@ -270,7 +273,7 @@ class Polygon : public Drawable {
                             coordinate->setX(tuple->xIt);
                             coordinate->setY(tuple->yIt);
                             modelBuffer->lazyDraw(coordinate, this->outlineColor);
-                            if (tuple->D <= 0) {
+                            if (tuple->D <= 0 && tuple->xIt != tuple->xEnd) {
                                 tuple->D += 2 * tuple->yD;
                                 tuple->xIt += tuple->xSigned;
                             }
