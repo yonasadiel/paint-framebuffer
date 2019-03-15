@@ -35,6 +35,11 @@ void readInput(Paint* paint) {
     noecho();
     cbreak();
 
+    char filename[] = "images/png/Menu.png";
+    pixelsbox pxl = readPNG(filename);
+    Rasterized* menu = new Rasterized(pxl.pixels, pxl.width, pxl.height/2, paint->getCanvasWidth()*5/6, 0);
+    paint->pushDrawable(menu);
+    
     int cursorSpeed = 5;
     int panSpeed = 5;
     unsigned char state = STATE_IDLE;
