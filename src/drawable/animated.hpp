@@ -2,9 +2,10 @@
 #define ANIMATED
 
 #include <vector>
+#include <stdlib.h>
 
 #include "polygon.hpp"
-#include "coordinate.hpp"
+#include "../etc/coordinate.hpp"
 
 class Animated : public Polygon
 {
@@ -12,6 +13,7 @@ class Animated : public Polygon
     bool loop;
     bool hidden;
     bool hiddenAfterFinish;
+    bool animationRunning;
 
     int maxAnchorVelocity;
     int nextAnchorKeyframes;
@@ -26,22 +28,53 @@ class Animated : public Polygon
     std::vector<double> *rotationKeyframes;
 
   public:
-    Animated() : Polygon() {
-        this->loop = false;
-        this->hidden = false;
-        this->hiddenAfterFinish = false;
-        this->maxAnchorVelocity = 0;
+    // Animated(bool start = true, 
+    //          bool loop = false,
+    //          int maxAnchorVelocity = 0,
+    //          double maxScaleVelocity = 0,
+    //          double maxRotationVelocity = 0) {
+    //     initAttributes(start, loop, maxAnchorVelocity, maxScaleVelocity, maxRotationVelocity);
         
-    }
+    // }
 
-    Animated(std::string filename, color c, char id, bool loop = false,
+    Animated(std::string filename, color c, char id, bool start = false, bool loop = false,
              int maxAnchorVelocity = 0,
              double maxScaleVelocity = 0,
-             double maxRotationVelocity = 0, int zAxis = 0) : Polygon(filename, c, id, zAxis)
+             double maxRotationVelocity = 0) : 
+    Polygon(filename, c, id)
+    {
+        initAttributes(start, loop, maxAnchorVelocity, maxScaleVelocity, maxRotationVelocity);
+    }
+
+    Animated(std::vector<Coordinate*>* points, color c, char id, bool start = false, bool loop = false,
+             int maxAnchorVelocity = 0,
+             double maxScaleVelocity = 0,
+             double maxRotationVelocity = 0) : 
+    Polygon(points, c, id)
+    {
+        initAttributes(start, loop, maxAnchorVelocity, maxScaleVelocity, maxRotationVelocity);
+    }
+
+    ~Animated()
+    {
+        for (int i = 0; i < this->anchorKeyframes->size(); i++)
+        {
+            delete this->anchorKeyframes->at(i);
+        }
+        delete this->anchorKeyframes;
+        delete this->scaleKeyframes;
+        delete this->rotationKeyframes;
+    }
+
+    void initAttributes(bool start = true, bool loop = false,
+             int maxAnchorVelocity = 0,
+             double maxScaleVelocity = 0,
+             double maxRotationVelocity = 0) 
     {
         this->loop = loop;
         this->hidden = false;
         this->hiddenAfterFinish = false;
+        this->animationRunning = start;        
 
         this->maxAnchorVelocity = maxAnchorVelocity;
         this->nextAnchorKeyframes = 0;
@@ -56,15 +89,12 @@ class Animated : public Polygon
         this->rotationKeyframes = new std::vector<double>();
     }
 
-    ~Animated()
-    {
-        for (int i = 0; i < this->anchorKeyframes->size(); i++)
-        {
-            delete this->anchorKeyframes->at(i);
-        }
-        delete this->anchorKeyframes;
-        delete this->scaleKeyframes;
-        delete this->rotationKeyframes;
+    void startAnimation(bool loop = true, int maxAnchorVelocity = 5, double maxScaleVelocity=1, double maxRotationVelocity=1){
+        this->animationRunning = true;
+        this->loop = loop;
+        this->maxAnchorVelocity = maxAnchorVelocity;
+        this->maxScaleVelocity = maxScaleVelocity;
+        this->maxRotationVelocity = maxRotationVelocity;
     }
 
     void addAnchorKeyframe(Coordinate *anchor)
@@ -113,13 +143,16 @@ class Animated : public Polygon
 
     void animate()
     {
+        if (!this->animationRunning) {
+            return;
+        }
         if (!this->anchorKeyframes->empty() && this->anchorKeyframes->size() > this->nextAnchorKeyframes)
         {
             int fromX = this->anchor->getX();
             int fromY = this->anchor->getY();
             Coordinate *dest = this->anchorKeyframes->at(this->nextAnchorKeyframes);
             this->moveTo(dest->getX(), dest->getY(), this->maxAnchorVelocity);
-            if (dest->getX() == fromX && dest->getY() == fromY)
+            if (abs(dest->getX() - fromX) < this->maxAnchorVelocity && abs(dest->getY() - fromY) < this->maxAnchorVelocity)
             {
                 this->nextAnchorKeyframes++;
                 if (this->loop)

@@ -148,7 +148,7 @@ class Polygon : public Drawable {
         int dx = x - this->anchor->getX();
         int dy = y - this->anchor->getY();
         int dist2 = dx * dx + dy * dy;
-        if (maxVelocity >= 0 && dist2 > maxVelocity && (dx != 0 || dy != 0)) {
+        if (maxVelocity >= 0 && dist2 > maxVelocity*maxVelocity && (dx != 0 || dy != 0)) {
             double factor = maxVelocity * 1.0 / sqrt(dist2);
             dx *= factor;
             dy *= factor;

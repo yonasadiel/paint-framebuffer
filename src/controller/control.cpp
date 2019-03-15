@@ -112,7 +112,7 @@ void readInput(Paint* paint) {
             paint->handlePushAtBack();
         }
 
-        if (paint->isObjectSelected()) {
+        if (paint->isObjectSelected() || paint->isRecording()) {
             if (c == COMMAND_ROTATE_RIGHT) {
                 paint->rotateRight();
             } else if (c == COMMAND_ROTATE_LEFT) {
@@ -121,6 +121,12 @@ void readInput(Paint* paint) {
                 paint->scaleUp();
             } else if (c == COMMAND_SCALE_DOWN) {
                 paint->scaleDown();
+            } else if (c == COMMAND_RECORD_ANIMATION){
+                if (paint->isRecording()) {
+                    paint->stopRecording();
+                } else {
+                    paint->startRecording();
+                }
             }
         }
 

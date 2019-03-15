@@ -9,6 +9,6 @@ void draw(FrameBuffer *framebuffer, Paint* paint) {
         framebuffer->clearScreen();
         paint->draw(framebuffer);
         framebuffer->draw();
-        usleep(10000);
+        usleep(30000);
     }
 }
