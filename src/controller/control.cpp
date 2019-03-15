@@ -117,8 +117,11 @@ image readPNG(char *filename) {
 void readInput(Paint* paint) {
     initscr();
     timeout(-1);
+    noecho();
+    cbreak();
 
     int cursorSpeed = 5;
+    int panSpeed = 5;
     unsigned char state = STATE_IDLE;
 
     while (paint->stillRunning()) {
@@ -130,25 +133,25 @@ void readInput(Paint* paint) {
 
             switch (c) {
                 case CHOOSE_COLOR_1:
-                    paint->setColor(CWHITE);
+                    paint->setFillColor(CWHITE);
                     break;
                 case CHOOSE_COLOR_2:
-                    paint->setColor(CRED);
+                    paint->setFillColor(CRED);
                     break;
                 case CHOOSE_COLOR_3:
-                    paint->setColor(CGREEN);
+                    paint->setFillColor(CGREEN);
                     break;
                 case CHOOSE_COLOR_4:
-                    paint->setColor(CBLUE);
+                    paint->setFillColor(CBLUE);
                     break;
                 case CHOOSE_COLOR_5:
-                    paint->setColor(CYELLOW);
+                    paint->setFillColor(CYELLOW);
                     break;
                 case CHOOSE_COLOR_6:
-                    paint->setColor(CCYAN);
+                    paint->setFillColor(CCYAN);
                     break;
                 case CHOOSE_COLOR_7:
-                    paint->setColor(CMAGENTA);
+                    paint->setFillColor(CMAGENTA);
             }
 
 
@@ -171,6 +174,14 @@ void readInput(Paint* paint) {
                     paint->startSaving();
                 } else if (c == COMMAND_LOAD) {
                     paint->startLoading();
+                } else if (c == COMMAND_PAN_LEFT) {
+                    paint->panScreen(-panSpeed, 0);
+                } else if (c == COMMAND_PAN_RIGHT) {
+                    paint->panScreen(panSpeed, 0);
+                } else if (c == COMMAND_PAN_UP) {
+                    paint->panScreen(0, -panSpeed);
+                } else if (c == COMMAND_PAN_DOWN) {
+                    paint->panScreen(0, panSpeed);
                 }
             }
 
@@ -225,8 +236,6 @@ void readInput(Paint* paint) {
                 
                 Rasterized* r = new Rasterized(img.pixels, img.width, img.height, 0, 0);
                 paint->pushDrawable(r);
-            } else {
-                std::cout << "\bTEST ";
             }
 
             paint->exitTextMode();
