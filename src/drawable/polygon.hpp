@@ -287,7 +287,7 @@ class Polygon : public Drawable {
                         } while (tuple->D <= 0 && tuple->xIt != tuple->xEnd);
                         tuple->D -= 2 * tuple->xD;
                         colored = true;
-                        if (tuple->yIt != tuple->yEnd) {
+                        if (tuple->yIt < tuple->yEnd) {
                             tuple->yIt++;
                         } else {
                             tuple->yIt = -1;
