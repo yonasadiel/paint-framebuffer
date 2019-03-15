@@ -303,7 +303,7 @@ public:
         selectionBuffer->clearScreen();
         this->draw(selectionBuffer, true);
         int id = ((int)selectionBuffer->lazyCheck(new Coordinate(x, y)))-1;
-        if (id >= 0) {
+        if (id >= 0 && id < this->layers->size()) {
             this->workingPolygon = (Animated *)this->layers->at(id);
             this->layers->erase(this->layers->begin()+id);
             this->nextState = STATE_OBJECT_SELECTED;
