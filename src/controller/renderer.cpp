@@ -6,9 +6,11 @@
 
 void draw(FrameBuffer *framebuffer, Paint* paint) {
     while (paint->stillRunning()) {
-        framebuffer->clearScreen();
-        paint->draw(framebuffer);
-        framebuffer->draw();
+        if (!paint->isTextMode()) {
+            framebuffer->clearScreen();
+            paint->draw(framebuffer);
+            framebuffer->draw();
+        }
         usleep(10000);
     }
 }

@@ -3,6 +3,7 @@
 
 #include <queue>
 #include <vector>
+#include <iostream>
 
 #include "../drawable/composite.hpp"
 #include "../drawable/drawable.hpp"
@@ -20,6 +21,8 @@
 #define STATE_DRAWING_LINE_SECOND 7
 #define STATE_SELECTING_OBJECT 8
 #define STATE_OBJECT_SELECTED 9
+#define STATE_SAVING 10
+#define STATE_LOADING 11
 
 #define ROTATION_SPEED 0.1
 #define SCALING_SPEED 2
@@ -30,6 +33,7 @@ private:
     Composite* cursor;
     bool cursorVisibility;
     bool running;
+    bool textMode;
     unsigned int state;
     unsigned int nextState;
     Polygon* workingPolygon;
@@ -40,6 +44,7 @@ public:
     Paint() {
         this->layers = new std::vector<Drawable*>();
         this->running = true;
+        this->textMode = false;
         this->cursorVisibility = false;
         this->cursor = new Composite("images/cursor.composite", CGRAY);
         this->cursor->scale(0.5);
@@ -54,6 +59,12 @@ public:
     }
 
     bool stillRunning() { return this->running; }
+    bool isTextMode() { return this->textMode; }
+    void startTextMode() { this->textMode = true; }
+    void exitTextMode() { 
+        this->textMode = false; 
+        this->state = STATE_IDLE;
+    }
     void terminate() { this->running = false; }
 
     void showCursor() { this->cursorVisibility = true; }
@@ -101,10 +112,20 @@ public:
     bool isIdle() { return this->state == STATE_IDLE; }
     bool isObjectSelected() {return this->state == STATE_OBJECT_SELECTED; }
     bool isAbleToMoveCursor() { return this->cursorVisibility; }
+    bool isSaving() { return this->state == STATE_SAVING; }
+    bool isLoading() { return this->state == STATE_LOADING; }
     void startDrawRectangle() { this->nextState = STATE_DRAWING_RECTANGLE_FIRST; }
     void startDrawTriangle() { this->nextState = STATE_DRAWING_TRIANGLE_FIRST; }
     void startDrawLine() { this->nextState = STATE_DRAWING_LINE_FIRST; }
     void startSelection() { this->nextState = STATE_SELECTING_OBJECT; }
+    void startSaving() { 
+        this->nextState = STATE_SAVING; 
+        this->startTextMode();
+    }
+    void startLoading() { 
+        this->nextState = STATE_LOADING; 
+        this->startTextMode();
+    }
     void rotateRight() { this->workingPolygon->rotate(ROTATION_SPEED); }
     void rotateLeft() { this->workingPolygon->rotate(-ROTATION_SPEED); }
     void scaleUp() { this->workingPolygon->scale(SCALING_SPEED); }

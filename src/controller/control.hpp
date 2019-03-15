@@ -21,6 +21,8 @@
 #define COMMAND_ROTATE_LEFT 'q'
 #define COMMAND_SCALE_UP '='
 #define COMMAND_SCALE_DOWN '-'
+#define COMMAND_SAVE 'n'
+#define COMMAND_LOAD 'm'
 
 #define CHOOSE_COLOR_1 '1'
 #define CHOOSE_COLOR_2 '2'
