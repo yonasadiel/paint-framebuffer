@@ -270,7 +270,7 @@ class Polygon : public Drawable {
                             coordinate->setX(tuple->xIt);
                             coordinate->setY(tuple->yIt);
                             modelBuffer->lazyDraw(coordinate, this->outlineColor);
-                            if (tuple->D <= 0) {
+                            if (tuple->D <= 0 && tuple->xIt != tuple->xEnd) {
                                 tuple->D += 2 * tuple->yD;
                                 tuple->xIt += tuple->xSigned;
                             }
