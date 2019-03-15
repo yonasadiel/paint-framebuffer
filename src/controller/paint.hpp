@@ -66,7 +66,7 @@ public:
         this->visibleMenu = true;
         char filename[] = "images/png/Menu.png";
         pixelsbox pxl = readPNG(filename);
-        this->menu = new Rasterized(pxl.pixels, pxl.width, pxl.height/2, this->getCanvasWidth()*5/6, 0);
+        this->menu = new Rasterized(pxl.pixels, pxl.width, pxl.height, this->getCanvasWidth()*5/6, 0);
     }
 
     Paint(int canvasWidth, int canvasHeight) : Paint() {
