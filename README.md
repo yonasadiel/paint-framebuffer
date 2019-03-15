@@ -3,6 +3,7 @@
 ## Setup
 
     sudo apt-get install libncurses5-dev
+    sudo apt-get install libpng-dev
 
 ## Compile and Run
 

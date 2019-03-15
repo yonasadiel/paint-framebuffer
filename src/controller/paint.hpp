@@ -3,12 +3,15 @@
 
 #include <queue>
 #include <vector>
+#include <iostream>
 
 #include "../drawable/composite.hpp"
 #include "../drawable/drawable.hpp"
 #include "../drawable/polygon.hpp"
+#include "../drawable/rasterized.hpp"
 #include "../drawable/animated.hpp"
 #include "../etc/color.hpp"
+#include "../etc/pixelsbox.hpp"
 #include "../framebuffer/framebuffer.hpp"
 #include "../framebuffer/modelbuffer.hpp"
 
@@ -22,6 +25,8 @@
 #define STATE_DRAWING_LINE_SECOND 7
 #define STATE_SELECTING_OBJECT 8
 #define STATE_OBJECT_SELECTED 9
+#define STATE_SAVING 10
+#define STATE_LOADING 11
 #define STATE_RECORDING_ANIMATION 10
 
 #define ROTATION_SPEED 0.1
@@ -33,6 +38,7 @@ private:
     Composite* cursor;
     bool cursorVisibility;
     bool running;
+    bool textMode;
     bool recording;
     unsigned int state;
     unsigned int nextState;
@@ -45,6 +51,7 @@ public:
     Paint() {
         this->layers = new std::vector<Drawable*>();
         this->running = true;
+        this->textMode = false;
         this->cursorVisibility = false;
         this->cursor = new Composite("images/cursor.composite", CGRAY);
         this->cursor->scale(0.5);
@@ -61,6 +68,12 @@ public:
     }
 
     bool stillRunning() { return this->running; }
+    bool isTextMode() { return this->textMode; }
+    void startTextMode() { this->textMode = true; }
+    void exitTextMode() { 
+        this->textMode = false; 
+        this->state = STATE_IDLE;
+    }
     void terminate() { this->running = false; }
 
     void showCursor() { this->cursorVisibility = true; }
@@ -103,8 +116,41 @@ public:
             this->cursor->draw(framebuffer);
     }
 
+    pixelsbox getSnapshot() {
+        ModelBuffer* mb = new ModelBuffer(this->width, this->height, 0, 0);
+        this->draw(mb);
+
+        color** buffer = mb->getBuffer();
+        pixel** pixels = new pixel*[this->height]; 
+
+		for (int row = 0; row < this->height; row++) {
+            pixels[row] = new pixel[this->width];
+            for (int column = 0; column < this->width; column++) {
+                if (row >= 0 && row < this->width) {
+                    if (column >= 0 && column < this->height) {
+                        pixels[row][column].alpha = (buffer[row][column] & 0xFF000000) >> 24;
+                        pixels[row][column].red = (buffer[row][column] & CRED) >> 16;
+                        pixels[row][column].green = (buffer[row][column] & CGREEN) >> 8;
+                        pixels[row][column].blue = buffer[row][column] & CBLUE;
+                    }
+                }
+            }
+		}
+
+        pixelsbox pxl;
+        pxl.pixels = pixels;
+        pxl.width = this->width;
+        pxl.height = this->height;
+
+        return pxl;
+    }
+
     void pushWorkingPolygon() {
         this->layers->push_back(this->workingPolygon);
+    }
+
+    void pushDrawable(Drawable* drawable) {
+        this->layers->push_back(drawable);
     }
 
     void deleteWorkingPolygon() {
@@ -119,11 +165,21 @@ public:
     bool isIdle() { return this->state == STATE_IDLE; }
     bool isObjectSelected() {return this->state == STATE_OBJECT_SELECTED; }
     bool isAbleToMoveCursor() { return this->cursorVisibility; }
+    bool isSaving() { return this->state == STATE_SAVING; }
+    bool isLoading() { return this->state == STATE_LOADING; }
     bool isRecording() {return this->state == STATE_RECORDING_ANIMATION; }
     void startDrawRectangle() { this->nextState = STATE_DRAWING_RECTANGLE_FIRST; }
     void startDrawTriangle() { this->nextState = STATE_DRAWING_TRIANGLE_FIRST; }
     void startDrawLine() { this->nextState = STATE_DRAWING_LINE_FIRST; }
     void startSelection() { this->nextState = STATE_SELECTING_OBJECT; }
+    void startSaving() { 
+        this->nextState = STATE_SAVING; 
+        this->startTextMode();
+    }
+    void startLoading() { 
+        this->nextState = STATE_LOADING; 
+        this->startTextMode();
+    }
     void rotateRight() { this->workingPolygon->rotate(ROTATION_SPEED); }
     void rotateLeft() { this->workingPolygon->rotate(-ROTATION_SPEED); }
     void scaleUp() { this->workingPolygon->scale(SCALING_SPEED); }

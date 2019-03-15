@@ -25,6 +25,8 @@
 #define COMMAND_ROTATE_LEFT 'q'
 #define COMMAND_SCALE_UP '='
 #define COMMAND_SCALE_DOWN '-'
+#define COMMAND_SAVE 'n'
+#define COMMAND_LOAD 'm'
 #define COMMAND_ENTER_AT_BACK '|'
 #define COMMAND_RECORD_ANIMATION '/'
 

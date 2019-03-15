@@ -6,7 +6,6 @@
 
 #include "drawable.hpp"
 
-
 class Image {
 private:
     int height;

@@ -38,6 +38,7 @@ class ModelBuffer : public IFrameBuffer {
 
 	int getWidth() const { return this->width; }
 	int getHeight() const { return this->height; }
+	color** getBuffer() const { return this->buffer; }
 
 	void clearScreen() {
 		for (int i = 0; i < this->height; i++) {

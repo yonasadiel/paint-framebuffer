@@ -1,6 +1,5 @@
 {
     "files.associations": {
-        "ostream": "cpp",
         "algorithm": "cpp",
         "array": "cpp",
         "*.tcc": "cpp",
@@ -28,6 +27,7 @@
         "limits": "cpp",
         "memory": "cpp",
         "new": "cpp",
+        "ostream": "cpp",
         "numeric": "cpp",
         "ratio": "cpp",
         "sstream": "cpp",
@@ -38,25 +38,6 @@
         "type_traits": "cpp",
         "tuple": "cpp",
         "typeinfo": "cpp",
-        "utility": "cpp",
-        "cstddef": "cpp",
-        "cstring": "cpp",
-        "ios": "cpp",
-        "list": "cpp",
-        "queue": "cpp",
-        "xthread": "cpp",
-        "xfacet": "cpp",
-        "xfunctional": "cpp",
-        "xhash": "cpp",
-        "xiosbase": "cpp",
-        "xlocale": "cpp",
-        "xlocinfo": "cpp",
-        "xlocnum": "cpp",
-        "xmemory": "cpp",
-        "xmemory0": "cpp",
-        "xstddef": "cpp",
-        "xstring": "cpp",
-        "xtr1common": "cpp",
-        "xutility": "cpp"
+        "utility": "cpp"
     }
 }

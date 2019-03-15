@@ -6,6 +6,7 @@
 #include "utils.hpp"
 
 #define log_filename "log/info.log"
+#define STRING_BUFFER_SIZE 256
 
 void flogclear()
 {
@@ -82,4 +83,35 @@ int pythagoreanApprox(int a, int b)
 int ColorRGB(char R, char G, char B)
 {
     return R << 16 + G << 8 + B;
+}
+
+char* readLine() 
+{
+    char* buffer = new char[STRING_BUFFER_SIZE];
+    for (int i = 0; i < STRING_BUFFER_SIZE; i++) {
+        buffer[i] = 0;
+    }
+
+    int idx = 0;
+    while (true) {
+        char x = getchar();
+        if (x == 127 && idx > 0) {
+            std::cout << "\b \b";
+            idx--;
+            buffer[idx] = 0;
+        } if (x == 13) {
+            std::cout << "\n";
+            break;
+        } else if (idx < STRING_BUFFER_SIZE &&
+            ((x >= 'A' && x <= 'Z') || 
+            (x >= 'a' && x <= 'z') || 
+            (x >= '0' && x <= '9') ||
+            x == '-' || x == '_' || x == '/' || x == '.')) {
+            buffer[idx] = x;
+            idx++;
+            std::cout << x;
+        }
+    }
+    
+    return buffer;
 }
