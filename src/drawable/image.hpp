@@ -4,21 +4,23 @@
 #include <iostream>
 #include <fstream>
 
+#include "drawable.hpp"
+
 struct Pixel {
     int red;
     int green;
     int blue;
 };
 
-class Image {
+class Image : public Drawable {
 private:
     struct Pixel** pixels;
     int height;
     int width;
+    char id;
 
 public:
-    Image(char* filename) : Image(filename, 16, 16) {};
-    Image(char* filename, int height, int width) {
+    Image(char* filename, int height = 16, int width = 16, char id = 0) {
         std::ifstream f(filename);
         int b, g, r;
 
@@ -39,6 +41,18 @@ public:
 			}
 		}
         f.close();
+    }
+
+    char getId const {
+        return this->id;
+    }
+
+    void draw(IFrameBuffer *framebuffer) {
+
+    }
+
+    void animate() {
+        
     }
 };
 
