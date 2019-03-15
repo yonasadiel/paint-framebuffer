@@ -29,6 +29,8 @@
 #define COMMAND_LOAD 'm'
 #define COMMAND_ENTER_AT_BACK '|'
 #define COMMAND_RECORD_ANIMATION '/'
+#define COMMAND_ZOOM_IN '+'
+#define COMMAND_ZOOM_OUT '-'
 
 #define CHOOSE_COLOR_1 '1'
 #define CHOOSE_COLOR_2 '2'
