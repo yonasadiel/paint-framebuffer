@@ -41,6 +41,7 @@ private:
     bool running;
     bool textMode;
     bool recording;
+    bool visibleMenu;
     unsigned int state;
     unsigned int nextState;
     Animated* workingPolygon;
@@ -62,7 +63,7 @@ public:
         this->state = STATE_IDLE;
         this->nextState = STATE_IDLE;
         this->recording = false;
-
+        this->visibleMenu = true;
         char filename[] = "images/png/Menu.png";
         pixelsbox pxl = readPNG(filename);
         this->menu = new Rasterized(pxl.pixels, pxl.width, pxl.height, this->getCanvasWidth()*5/6, 0);
@@ -85,6 +86,8 @@ public:
 
     void showCursor() { this->cursorVisibility = true; }
     void hideCursor() { this->cursorVisibility = false; }
+    void showMenu() { this->visibleMenu = true; }
+    void hideMenu() { this->visibleMenu = false; }
     int getCanvasWidth(){ return this->width;}
     int getCanvasHeight(){ return this->height;}
     void setFillColor(color fillColor) {
@@ -125,7 +128,8 @@ public:
             this->workingPolygon->draw(framebuffer);
         if (this->cursorVisibility)
             this->cursor->draw(framebuffer);
-        this->menu->draw(framebuffer);
+        if (this->visibleMenu)
+            this->menu->draw(framebuffer);
     }
 
     pixelsbox getSnapshot() {
