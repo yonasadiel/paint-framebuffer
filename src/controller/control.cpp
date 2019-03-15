@@ -140,6 +140,8 @@ void readInput(Paint* paint) {
 
             if (c == COMMAND_ENTER) {
                 paint->handleClick();
+            } else if (c == COMMAND_ENTER_AT_BACK){
+                paint->handlePushAtBack();
             }
 
             if (paint->isObjectSelected() || paint->isRecording()) {
