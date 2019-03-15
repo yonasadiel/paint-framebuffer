@@ -65,6 +65,7 @@ public:
     Paint(int canvasWidth, int canvasHeight) : Paint() {
         this->width = canvasWidth;
         this->height = canvasHeight;
+        this->cursor->move(this->width/2, this->height/2);
     }
 
     bool stillRunning() { return this->running; }
