@@ -5,15 +5,15 @@
 #include "paint.hpp"
 #include "control.hpp"
 #include "pnghandler.hpp"
-#include "../etc/image.hpp"
+#include "../etc/pixelsbox.hpp"
 #include "../etc/utils.hpp"
 
-void exportPNG(image img) {
+void exportPNG(pixelsbox pxl) {
     std::cout << "\bEnter filename: ";
     char* filename = readLine();
     std::cout << "\rSaving to file " << filename << "....\n\r";
 
-    writePNG(filename, img);
+    writePNG(filename, pxl);
 
     std::cout << "Successfully Saved!\n\r";
     std::cout << "Press any key to continue...";
@@ -25,8 +25,8 @@ Rasterized* loadPNG() {
     char* filename = readLine();
     std::cout << "\rLoading from file " << filename << "....\n\r";
 
-    image img = readPNG(filename);
-    Rasterized* r = new Rasterized(img.pixels, img.width, img.height, 0, 0);
+    pixelsbox pxl = readPNG(filename);
+    Rasterized* r = new Rasterized(pxl.pixels, pxl.width, pxl.height, 0, 0);
 }
 
 void readInput(Paint* paint) {
@@ -42,9 +42,7 @@ void readInput(Paint* paint) {
     while (paint->stillRunning()) {
         if (!paint->isTextMode()) {
             char c = getch();
-            // we use nextState so it wont execute next interpretation before the state is changed
             unsigned char nextState = state;
-            // printf("\n%d\n", 0+c);
 
             switch (c) {
                 case CHOOSE_COLOR_1:
@@ -67,6 +65,27 @@ void readInput(Paint* paint) {
                     break;
                 case CHOOSE_COLOR_7:
                     paint->setFillColor(CMAGENTA);
+                case CHOOSE_PATTERN_1:
+                    paint->setPattern(0);
+                    break;
+                case CHOOSE_PATTERN_2:
+                    paint->setPattern(1);
+                    break;
+                case CHOOSE_PATTERN_3:
+                    paint->setPattern(2);
+                    break;
+                case CHOOSE_PATTERN_4:
+                    paint->setPattern(3);
+                    break;
+                case CHOOSE_PATTERN_5:
+                    paint->setPattern(4);
+                    break;
+                case CHOOSE_PATTERN_6:
+                    paint->setPattern(5);
+                    break;
+                case CHOOSE_PATTERN_7:
+                    paint->setPattern(6);
+                    break;
             }
 
 
@@ -127,6 +146,12 @@ void readInput(Paint* paint) {
                     paint->scaleUp();
                 } else if (c == COMMAND_SCALE_DOWN) {
                     paint->scaleDown();
+                } else if (c == COMMAND_RECORD_ANIMATION){
+                    if (paint->isRecording()) {
+                        paint->stopRecording();
+                    } else {
+                        paint->startRecording();
+                    }
                 }
             }
 

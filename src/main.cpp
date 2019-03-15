@@ -8,12 +8,14 @@
 #include "controller/control.hpp"
 #include "controller/paint.hpp"
 #include "controller/renderer.hpp"
+#include "etc/pattern.hpp"
 #include "drawable/drawable.hpp"
 #include "drawable/polygon.hpp"
 #include "framebuffer/framebuffer.hpp"
 
 int main(int argc, char **args) {
     flogclear();
+
     FrameBuffer *framebuffer;
     try {
         framebuffer = new FrameBuffer();

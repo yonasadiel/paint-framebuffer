@@ -11,6 +11,6 @@ void draw(FrameBuffer *framebuffer, Paint* paint) {
             paint->draw(framebuffer);
             framebuffer->draw();
         }
-        usleep(10000);
+        usleep(30000);
     }
 }

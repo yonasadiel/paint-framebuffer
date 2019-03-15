@@ -2,9 +2,9 @@
 #include <stdlib.h>
 
 #include <png.h>
-#include "../etc/image.hpp"
+#include "../etc/pixelsbox.hpp"
 
-image readPNG(char *filename) {
+pixelsbox readPNG(char *filename) {
     int width, height;
     png_byte color_type;
     png_byte bit_depth;
@@ -69,17 +69,17 @@ image readPNG(char *filename) {
         }
     }
 
-    image img;
-    img.pixels = pixels;
-    img.width = width;
-    img.height = height;
+    pixelsbox pxl;
+    pxl.pixels = pixels;
+    pxl.width = width;
+    pxl.height = height;
 
     fclose(fp);
 
-    return img;
+    return pxl;
 }
 
-void writePNG(char *filename, image img) {
+void writePNG(char *filename, pixelsbox pxl) {
     FILE *fp = fopen(filename, "wb");
     if(!fp) abort();
 
@@ -96,7 +96,7 @@ void writePNG(char *filename, image img) {
     png_set_IHDR(
         png,
         info,
-        img.width, img.height,
+        pxl.width, pxl.height,
         8,
         PNG_COLOR_TYPE_RGBA,
         PNG_INTERLACE_NONE,
@@ -105,13 +105,13 @@ void writePNG(char *filename, image img) {
     );
     png_write_info(png, info);
 
-    png_bytep row = (png_bytep) malloc(4 * img.width * sizeof(png_byte));
+    png_bytep row = (png_bytep) malloc(4 * pxl.width * sizeof(png_byte));
     int x, y;
-    for (y = 0; y < img.height ; y++) {
-        for (x = 0 ; x < img.width ; x++) {
-            row[x*4 + 0] = img.pixels[y][x].red;
-            row[x*4 + 1] = img.pixels[y][x].green;
-            row[x*4 + 2] = img.pixels[y][x].blue;
+    for (y = 0; y < pxl.height ; y++) {
+        for (x = 0 ; x < pxl.width ; x++) {
+            row[x*4 + 0] = pxl.pixels[y][x].red;
+            row[x*4 + 1] = pxl.pixels[y][x].green;
+            row[x*4 + 2] = pxl.pixels[y][x].blue;
             row[x*4 + 3] = 0xFF;
         }
         png_write_row(png, row);
