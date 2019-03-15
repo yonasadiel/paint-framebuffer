@@ -91,6 +91,7 @@ void readInput(Paint* paint) {
 
 
             if (paint->isIdle()) {
+                paint->hideMenu();
                 if (c == COMMAND_QUIT) {
                     paint->terminate();
                 } else if (c == COMMAND_DRAW_RECTANGLE) {
@@ -121,6 +122,8 @@ void readInput(Paint* paint) {
                     paint->zoomScreen(TRUE);
                 } else if (c == COMMAND_ZOOM_OUT) {
                     paint->zoomScreen(FALSE);
+                } else {
+                    paint->showMenu();
                 }
             }
 
