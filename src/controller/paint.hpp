@@ -27,7 +27,7 @@
 #define STATE_OBJECT_SELECTED 9
 #define STATE_SAVING 10
 #define STATE_LOADING 11
-#define STATE_RECORDING_ANIMATION 10
+#define STATE_RECORDING_ANIMATION 12
 
 #define ROTATION_SPEED 0.1
 #define SCALING_SPEED 1.2
@@ -65,6 +65,7 @@ public:
     Paint(int canvasWidth, int canvasHeight) : Paint() {
         this->width = canvasWidth;
         this->height = canvasHeight;
+        this->cursor->move(this->width/2, this->height/2);
     }
 
     bool stillRunning() { return this->running; }
@@ -95,12 +96,14 @@ public:
 
     void draw(IFrameBuffer* framebuffer, bool drawById = false) {
         color temp1, temp2;
+        int tempMode;
         for (int i = 0; i < layers->size(); i++) {
             Animated* layer = (Animated*)layers->at(i);
             layer->animate();
             if (drawById) {
                 temp1 = (layer)->getFillColor();
                 temp2 = (layer)->getOutlineColor();
+                tempMode = layer->getMode();
                 (layer)->setFillColor(i+1);
                 (layer)->setOutlineColor(i+1);
             }
@@ -108,6 +111,7 @@ public:
             if (drawById) {
                 (layer)->setFillColor(temp1);
                 (layer)->setOutlineColor(temp2);
+                layer->setMode(tempMode);
             }
         }
         if (this->workingPolygon != NULL)

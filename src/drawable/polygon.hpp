@@ -135,6 +135,12 @@ class Polygon : public Drawable {
         this->pattern = pattern;
         this->mode = 1;
     }
+    int getMode() {
+        return this->mode;
+    }
+    void setMode(int mode) {
+        this->mode = mode;
+    }
     void setOutlineColor(color outlineColor) { this->outlineColor = outlineColor; }
 
     void move(int dx, int dy) {

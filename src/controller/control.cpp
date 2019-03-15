@@ -65,6 +65,7 @@ void readInput(Paint* paint) {
                     break;
                 case CHOOSE_COLOR_7:
                     paint->setFillColor(CMAGENTA);
+                    break;
                 case CHOOSE_PATTERN_1:
                     paint->setPattern(0);
                     break;
@@ -141,7 +142,7 @@ void readInput(Paint* paint) {
                 paint->handleClick();
             }
 
-            if (paint->isObjectSelected()) {
+            if (paint->isObjectSelected() || paint->isRecording()) {
                 if (c == COMMAND_ROTATE_RIGHT) {
                     paint->rotateRight();
                 } else if (c == COMMAND_ROTATE_LEFT) {
