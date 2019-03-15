@@ -234,7 +234,7 @@ public:
     }
 
     void stopRecording() {
-        this->workingPolygon->startAnimation();
+        this->workingPolygon->startAnimation(true, 10, 0.05, 0.05);
         this->pushWorkingPolygon();
         this->workingPolygon = NULL;
         this->nextState = STATE_IDLE;

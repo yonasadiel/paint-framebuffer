@@ -2,6 +2,7 @@
 #define ANIMATED
 
 #include <vector>
+#include <stdlib.h>
 
 #include "polygon.hpp"
 #include "../etc/coordinate.hpp"
@@ -88,7 +89,7 @@ class Animated : public Polygon
         this->rotationKeyframes = new std::vector<double>();
     }
 
-    void startAnimation(bool loop = true, int maxAnchorVelocity = 1, double maxScaleVelocity=1, double maxRotationVelocity=1){
+    void startAnimation(bool loop = true, int maxAnchorVelocity = 5, double maxScaleVelocity=1, double maxRotationVelocity=1){
         this->animationRunning = true;
         this->loop = loop;
         this->maxAnchorVelocity = maxAnchorVelocity;
@@ -151,7 +152,7 @@ class Animated : public Polygon
             int fromY = this->anchor->getY();
             Coordinate *dest = this->anchorKeyframes->at(this->nextAnchorKeyframes);
             this->moveTo(dest->getX(), dest->getY(), this->maxAnchorVelocity);
-            if (dest->getX() == fromX && dest->getY() == fromY)
+            if (abs(dest->getX() - fromX) < this->maxAnchorVelocity && abs(dest->getY() - fromY) < this->maxAnchorVelocity)
             {
                 this->nextAnchorKeyframes++;
                 if (this->loop)
