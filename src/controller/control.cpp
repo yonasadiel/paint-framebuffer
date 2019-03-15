@@ -65,7 +65,6 @@ void readInput(Paint* paint) {
                     break;
                 case CHOOSE_COLOR_7:
                     paint->setFillColor(CMAGENTA);
-                    break;
                 case CHOOSE_PATTERN_1:
                     paint->setPattern(0);
                     break;
@@ -117,6 +116,10 @@ void readInput(Paint* paint) {
                     paint->panScreen(0, -panSpeed);
                 } else if (c == COMMAND_PAN_DOWN) {
                     paint->panScreen(0, panSpeed);
+                } else if (c == COMMAND_ZOOM_IN) {
+                    paint->zoomScreen(TRUE);
+                } else if (c == COMMAND_ZOOM_OUT) {
+                    paint->zoomScreen(FALSE);
                 }
             }
 
@@ -138,7 +141,7 @@ void readInput(Paint* paint) {
                 paint->handleClick();
             }
 
-            if (paint->isObjectSelected() || paint->isRecording()) {
+            if (paint->isObjectSelected()) {
                 if (c == COMMAND_ROTATE_RIGHT) {
                     paint->rotateRight();
                 } else if (c == COMMAND_ROTATE_LEFT) {
