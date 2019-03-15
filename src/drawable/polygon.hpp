@@ -275,6 +275,7 @@ class Polygon : public Drawable {
                 for (int i = 0; i < lines->size(); i++) {
                     BressenhamTuple* tuple = lines->at(i);
                     if (tuple->yIt == yIt && tuple->xIt == xIt) {
+                        if (tuple->xIt != tuple->xStart || tuple->xStart == tuple->xEnd) fill = !fill;
                         do {
                             coordinate->setX(tuple->xIt);
                             coordinate->setY(tuple->yIt);
@@ -286,7 +287,6 @@ class Polygon : public Drawable {
                         } while (tuple->D <= 0 && tuple->xIt != tuple->xEnd);
                         tuple->D -= 2 * tuple->xD;
                         colored = true;
-                        fill = !fill;
                         if (tuple->yIt != tuple->yEnd) {
                             tuple->yIt++;
                         } else {
