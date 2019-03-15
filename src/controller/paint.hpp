@@ -212,6 +212,32 @@ public:
         }
     }
 
+    void handlePushAtBack(){
+        if (this->state == STATE_DRAWING_RECTANGLE_SECOND) {
+            this->workingPolygon->setAnchorOnCenter();
+            this->pushWorkingPolygonAtBackLayer();
+            this->hideCursor();
+            this->nextState = STATE_IDLE;
+            this->workingPolygon = NULL;
+        } else if (this->state == STATE_DRAWING_TRIANGLE_THIRD) {
+            this->workingPolygon->setAnchorOnCenter();
+            this->pushWorkingPolygonAtBackLayer();
+            this->hideCursor();
+            this->nextState = STATE_IDLE;
+            this->workingPolygon = NULL;
+        } else if (this->state == STATE_DRAWING_LINE_SECOND) {
+            this->pushWorkingPolygonAtBackLayer();
+            this->hideCursor();
+            this->nextState = STATE_IDLE;
+            this->workingPolygon = NULL;
+        } else if (this->state == STATE_OBJECT_SELECTED) {
+            this->pushWorkingPolygonAtBackLayer();
+            this->hideCursor();
+            this->nextState = STATE_IDLE;
+            this->workingPolygon = NULL;
+        }
+    }
+
     void selectObjectAt(int x, int y) {
         ModelBuffer* selectionBuffer = new ModelBuffer(this->width, this->height, 0, 0);
         selectionBuffer->clearScreen();
@@ -229,6 +255,10 @@ public:
 
     void moveSelected(int x, int y){
         workingPolygon->move(x, y);
+    }
+
+    void pushWorkingPolygonAtBackLayer(){
+        this->layers->insert(this->layers->begin(), this->workingPolygon);
     }
 
     void panScreen(int x, int y){
